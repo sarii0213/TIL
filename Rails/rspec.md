@@ -17,3 +17,9 @@ https://railsguides.jp/testing.html#%E3%83%95%E3%82%A3%E3%82%AF%E3%82%B9%E3%83%8
 とopen IOオブジェクトとファイル名を１つ以上含むハッシュを渡す
 
 https://railsguides.jp/active_storage_overview.html#file-io-objects%E3%82%92%E3%82%A2%E3%82%BF%E3%83%83%E3%83%81%E3%81%99%E3%82%8B
+
+## xit
+example全体をskip   
+- テスト成功失敗に関わらずテストを実行しない
+- pending扱い
+- プルリクエスト出したいけどこのテストは一旦保留にしたい、テストが未完成だけどとりあえずプルリク出したい時などに便利
