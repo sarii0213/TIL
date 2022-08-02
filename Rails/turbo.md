@@ -4,9 +4,9 @@
   - Turbo Drive
   - Turbo Frames
   - Turbo Streams
-  - Turbo Native 
+  - （Turbo Native）
 - Stimulus: Turboと相性が良いライブラリ。JSにレールを敷く役割。整理するってこと？
-- Strada: Hotwireを使ってモバイルアプリケーションを開発する際に利用。未発表の技術のため、Hotwire = Turbo + Stimulusの理解でOK。
+- （Strada: Hotwireを使ってモバイルアプリケーションを開発する際に利用。未発表の技術のため、Hotwire = Turbo + Stimulusの理解でOK。）
 
 （Turbo Native & Strada はモバイル開発で使う技術）
 
@@ -46,8 +46,35 @@
 - 複数箇所のHTMLを要素を同時に更新・追加・削除が可能✨
   - Turbo Framesは一箇所だけ＆更新のみ
 - チャットのようなリアルタイムなアプリケーションを作ることも可能
+```erb
+<%= turbo_stream.append "cats", @cat %>
+```
+### turbo-rails
+- RailsからTurboを便利に使うためのgem
+- TurboはJSライブラリであり、Railsには依存しない
+
+### Stimulus
+- Turboを使うと、JSを書かずにサーバーサイドレンダリング＋fetchでHTML要素を更新できるようになる
+- RailsのScaffoldで用意される７つのアクション（index, show, new, create, edit, update, destroy）は、JSなしでインタラクティブにできるように
+- 結果、ReactやVueを使うのに比べてJSを書く量は劇的に減るが、それでもJSが必要な場合に、Stimulusが用意するレールの上にJSを書くことになる
   
-### Turbo Rails
+### Hotwireのまとめ
+1. 通常の画面遷移： HTMLを丸ごと変える
+2. Turbo Drive: `<body>`だけ更新する
+3. Turbo Frame: `<turbo-frame>`だけ更新する
+4. Turbo Stream: 複数のHTMLを更新する
+5. Stimulus: JSを使ってTurboでできない処理をする
+  
+↓自由度 🆙 ＆ 開発・メンテナンスコスト 🆙  
+
+必要に応じて、段階的に作り込んでいく（1,2,3,,,）のがおすすめ
+  
+### importmap-rails, jsbundling-rails ❓
+- instaクローンではimportmap-railsを使っているっぽい
+- jsbundling-rails
+  - `rails new ... --css bootstrap`とするとjsbundling-rails
   
 ## 参考
 [猫でもわかるHotwire入門 Turbo編](https://zenn.dev/shita1112/books/cat-hotwire-turbo/viewer/abstract)
+[importmapとは](https://zenn.dev/takeyuweb/articles/996adfac0d58fb)
+[importmap-rails github](https://github.com/rails/importmap-rails)
