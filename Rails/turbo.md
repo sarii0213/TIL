@@ -27,7 +27,7 @@
 ## Turboとは
 - JSを使わずにSPA風のアプリケーションを実現できる
 
-### Turbo Drive
+### Turbo Drive　 📄
 - 画面遷移を高速化
 - 旧名： Turbolinks
 - 仕組み
@@ -38,7 +38,7 @@
   - コードをいじる必要なし！ (`turbo_*`を使う ex) method, confirm,  )
   - Turbo Driveを使いたくない場合： app/javascript/application.jsに`Turbo.session.drive = false`
 
-### Turbo Frames
+### Turbo Frames 🔲
 - Turbo Driveの部分置換版...画面の一部だけしか更新しない場合に◎
 - Turbo Frames: `<turbo-frame>..</turbo-frame>`を置換
   - Turbo Drive: `<body>..</body>` 
@@ -53,7 +53,7 @@
   - 通常は`<trubo-frame>`内からのリンクやフォームのリクエストがTurbo Frameリクエストになる
   - `<trubo-frame>`外のリンク・フォームの場合：`{ data: { turbo_frame: "ID_NAME" } }`と指定すればOK
   
-### Turbo Stream
+### Turbo Stream  ◽
 - 複数箇所のHTMLを要素を同時に更新・追加・削除が可能✨
   - Turbo Framesは一箇所だけ＆更新のみ
 - チャットのようなリアルタイムなアプリケーションを作ることも可能
@@ -64,7 +64,7 @@
 - RailsからTurboを便利に使うためのgem
 - TurboはJSライブラリであり、Railsには依存しない
 
-### Stimulus
+### Stimulus ✳️
 - Turboを使うと、JSを書かずにサーバーサイドレンダリング＋fetchでHTML要素を更新できるようになる
 - RailsのScaffoldで用意される７つのアクション（index, show, new, create, edit, update, destroy）は、JSなしでインタラクティブにできるように
 - 結果、ReactやVueを使うのに比べてJSを書く量は劇的に減るが、それでもJSが必要な場合に、Stimulusが用意するレールの上にJSを書くことになる
