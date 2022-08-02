@@ -35,12 +35,23 @@
   - そして、レスポンスされたHTMLの<body>要素だけ抜き出して、現在のページの<body>要素を置換する（＋<head>の一部がマージ）
   - 画面遷移しても今のページのCSS・JSをそのまま利用できるため、CSS・JSを初期化してページに適用する処理をスキップできる→画面遷移高速化✨
 - 導入方法
-  - コードをいじる必要なし！ `turbo_method: `などと書けばよい
+  - コードをいじる必要なし！ (`turbo_*`を使う ex) method, confirm,  )
+  - Turbo Driveを使いたくない場合： app/javascript/application.jsに`Turbo.session.drive = false`
 
 ### Turbo Frames
 - Turbo Driveの部分置換版...画面の一部だけしか更新しない場合に◎
 - Turbo Frames: `<turbo-frame>..</turbo-frame>`を置換
   - Turbo Drive: `<body>..</body>` 
+
+- 仕組み
+  - クライアント側: ページネーションのリンクをクリックした時に、Turboが通常のリクエストをインターセプトして、fetchを行う（Turbo Driveと同じ）。ただし`<turbo-frame>`内からのリンクなので、リクエストヘッダーに`Turbo-Frame: ID_NAME`を付与する（これでTurbo Frameリクエストになる）
+  - サーバー側: サーバー側はリクエストヘッダーに`Turbo-Frame`が存在するとTurbo Frameリクエストだと判断する。Turbo Frameリクエストの場合、高速化のためにレイアウトテンプレート（`application.html.erb`）のレンダリングはせずに、メインテンプレートだけをレンダリングしてレスポンスする。
+  - クライアント側: クライアント側はレスポンス（メインテンプレートのレンダリング結果）を受け取り、`<turbo-frame>`のidが一致する`<turbo-frame id="ID_NAME">`部分（一覧部分）だけを置換する。検索フォーム等の一覧以外の部分に関しては、レスポンスはされるが利用されずに捨てられる。
+
+- 導入方法
+  - 置換したい箇所を`<%= turbo_frame_tag "ID_NAME" do %>`で囲む
+  - 通常は`<trubo-frame>`内からのリンクやフォームのリクエストがTurbo Frameリクエストになる
+  - `<trubo-frame>`外のリンク・フォームの場合：`{ data: { turbo_frame: "ID_NAME" } }`と指定すればOK
   
 ### Turbo Stream
 - 複数箇所のHTMLを要素を同時に更新・追加・削除が可能✨
@@ -70,11 +81,19 @@
 必要に応じて、段階的に作り込んでいく（1,2,3,,,）のがおすすめ
   
 ### importmap-rails, jsbundling-rails ❓
-- instaクローンではimportmap-railsを使っているっぽい
-- jsbundling-rails
-  - `rails new ... --css bootstrap`とするとjsbundling-rails
+- importmap-rails
+  - デフォルト 
+  - 自前のJavaScriptはES6で書いてバンドルせずにHTTP/2で配信して、サードパーティーのJavaScriptライブラリはCDNから取得する方法 ❓
+  - instaクローンではimportmap-railsを使っているっぽい
+- jsbundling-rails　（＆cssbundling-rails）
+  - `rails new ... --css bootstrap`とするとjsbundling-railsが自動で選ばれる
+  - `rails s`を起動するだけではJS・CSSのビルドが自動で行われない
+  - `$ bin/dev`(`--css bootstrap`で自動生成されるファイル)を叩けばOK
+  - （↑ foremanというプロセス管理のツールを使って、サーバーのプロセスと、JS・CSSの自動ビルドのプロセスを同時に立ち上げる）
   
 ## 参考
 [猫でもわかるHotwire入門 Turbo編](https://zenn.dev/shita1112/books/cat-hotwire-turbo/viewer/abstract)
 [importmapとは](https://zenn.dev/takeyuweb/articles/996adfac0d58fb)
 [importmap-rails github](https://github.com/rails/importmap-rails)
+[Webpackerとjsbundling-railsの比較](https://techracho.bpsinc.jp/hachi8833/2022_03_17/115294)
+[jsbundling-rails github](https://github.com/rails/jsbundling-rails)
