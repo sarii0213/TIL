@@ -12,6 +12,9 @@
 やめるとき  
 Ctrl+P -> Ctrl+Q
 
+`docker attach CONTAINER_NAME`について：  
+”同じマシンなら tcp/ip で remote debug port 通すと docker attach 不要になｒますよ” とのこと…
+
 https://medium.com/gogox-technology/debugging-rails-app-with-docker-compose-39a3767962f4
 https://techlife.cookpad.com/entry/2021/12/27/202133  
 https://qiita.com/yuskubo/items/111a87e2402de8e12914
