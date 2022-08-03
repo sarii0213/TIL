@@ -53,13 +53,28 @@
   - 通常は`<trubo-frame>`内からのリンクやフォームのリクエストがTurbo Frameリクエストになる
   - `<trubo-frame>`外のリンク・フォームの場合：`{ data: { turbo_frame: "ID_NAME" } }`と指定すればOK
   
-### Turbo Stream  ◽
+### Turbo Stream  💥
 - 複数箇所のHTMLを要素を同時に更新・追加・削除が可能✨
   - Turbo Framesは一箇所だけ＆更新のみ
 - チャットのようなリアルタイムなアプリケーションを作ることも可能
+- GET以外のHTTPメソッド時に有効（update/create/destroy）
+- レンダリングするフォーマットはhtmlではなくturbo_stream（←ココで処理のリストを書くイメージ）
+- `turbo_stream.append`
+- `turbo_stream.replace`: パーシャルをrender
+- target: 操作するHTML要素のid指定
+- action: targetの操作方法指定
+  - 追加
+    - append/prepend: targetの末尾/先頭
+    - before/after: targetの前/後
+  - 更新
+    - replace: target要素も含めて
+    - update: target要素のコンテンツのみ
+  - 削除
+    - remove
 ```erb
-<%= turbo_stream.append "cats", @cat %>
+<%= turbo_stream.append "TARGET_ID", OBJECT %>
 ```
+
 ### turbo-rails
 - RailsからTurboを便利に使うためのgem
 - TurboはJSライブラリであり、Railsには依存しない
