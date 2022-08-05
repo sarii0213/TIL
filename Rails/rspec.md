@@ -67,3 +67,10 @@
 - [sequenceとtraitについて](https://note.com/izuha0/n/n212843da0bd4)
 - [FactoryBot the right way](https://www.youtube.com/watch?v=n0epZM-lZvw)
 - [rspecを読みやすくメンテしやすく書くために](https://zenn.dev/yuji_developer/articles/52cc0e356b3748)
+
+
+## おまけ話
+### LOAD_PATH
+- Railsでは、ロードパスという、パスのリストが定義されている。
+- `rails c`で`$LOAD_PATH`と叩くと一覧表示される
+- `<APP_NAME>/spec`がロードパスにないのに、specファイルで`require 'rails_helper'`が通るワケは、specが起動されるとそのプロセスではspecのコアファイルに定義された、ロードパスにspecディレクトリを含めるメソッドが実行され、そのプロセス内のロードパスに`<APP_NAME>/spec`が追加される。specプロセスを抜けてしまうと、デフォルトのロードパスの設定が適用されているため、`<APP_NAME>/spec`はロードパスに存在しない。
