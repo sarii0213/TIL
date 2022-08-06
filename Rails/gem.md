@@ -3,3 +3,4 @@
 - annotate: テーブル情報をモデルに出力
 - pagy: ページネーション（kaminariより良い？）
 - pre-commit: コミット直前に走らせたいスクリプトを定義（選択肢に限りがあるため、pre-commitファイルを自作するのも◎）
+- ransack: 検索機能
