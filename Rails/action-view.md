@@ -15,3 +15,15 @@ DOMのid規約に沿った名前を取得
 ※キーと値の文字が一致している場合  　
 https://blog.saeloun.com/2021/09/28/ruby-allow-value-omission-in-hash-literals.html 
 
+## コレクションをレンダリング
+基本形
+```ruby
+<%= render partial: "product", collection: @products %>
+```
+複数形のコレクションを渡してパーシャルを呼び出すと、パーシャルの個別のインスタンスは、パーシャルと同じ名前の変数（アンダースコアなし）を経由してコレクションの個別のメンバーにアクセスできる
+
+<br>
+ショートハンド記法（さまざまな条件が重なったときに適用可能）
+```ruby
+<%= render @products %>
+```
