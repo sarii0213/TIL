@@ -1,3 +1,7 @@
+## has_many関連付け名
+- 複数形にしないとエラーになる、というわけではない
+- 慣習的にわかりやすい名前をつけてOK（「フォローしている人たち」なら"following" as seen in Twitter）
+
 ## with_attached_images.includes(:user)
 
 `with_attached_images`メソッドを使うことで、内部的にincludes結合扱いになり、**N+1クエリ問題**を回避できる
