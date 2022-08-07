@@ -32,7 +32,63 @@
 - Docker CLI: コマンド。Docker Engineに提供され、`docker run`のような`docker`ではじまるコマンドで Docker に命令をする。
 - Docker Desktop: Windows/MacでDockerを使うときにインストールするDocker一式が入ったGUIアプリケーション。Docker EngineやLinuxのカーネルが含まれているため、Linux以外のOSでもDocker Engineを動かすことができる。（Docker ComposeやKubernetesも含む）
 - Docker Compose: Docker CLI（`docker`コマンド群）をまとめて実行してくれる便利なツール。複雑なコマンドを、Yamlファイルを書くことで実現できる。
-- Docker Hub: DockerのイメージレジストリであるSaasサービス。イメージのGitHubのようなもの。
+- Docker Hub: DockerのイメージレジストリであるSaasサービス。イメージのGitHubのようなもの。インストールしたり、アップロードしたり。
 - デプロイ時
   - ECS/GKE:ECS(Amazon Elastic Container Service)とGKE(Google Kubernetes Engine)は、コンテナ管理サービス。Docker Engineの入ったLinuxのことで、ローカル環境で使ったコンテナをそのままデプロイできる場所。
   - ECR/GCR: ECR(Amazon Elastic Container Registory)とGCR(Google Container Registory)は、非公開のイメージのレジストリ。プライベートなDocker Hub。商用サービスを公開したくないけど、レジストリに登録しないとデプロイできない場合などに利用。
+- コンテナ運用（インフラ構築）
+  - Kubernetes: 多数のコンテナを管理するオーケストレーションソフトウェア。  
+
+### 疑問
+- コンテナはホストOSのカーネルを利用する？でもMac OSのカーネルはXNUでLinuxではないよね？Docker Desktopに入っているLinuxカーネルと、ホストOSのカーネルはどう作用しあうの？
+
+### Dockerの基本要素３つ
+- コンテナ
+- イメージ
+- Dockerfile
+
+#### コンテナ
+- 特定のコマンドを実行するために作られる ホストマシン上の隔離された領域（LinuxのNamespaceにより、PIDはホストマシンのものと衝突しない）
+- ホストマシンの１プロセスにすぎない。仮想サーバではない。
+- イメージをもとに作られる
+- DockerのCLIやAPIを使って、生成・起動・停止を行える
+- 複数のコンテナは互いに独立し、影響を与えない
+- Docker Engineの上ならローカルマシンでも仮想マシンでもクラウド環境でも動かせる
+
+### イメージ
+- コンテナの実行に必要なパッケージで、ファイルやメタ情報を集めたもの
+- 複数のレイヤーからなる
+- イメージに含まれる情報
+  -　ベースはなにか　（ex. Ubuntu）
+  -　なにをインストールしてあるか (ex. PHP)
+  -　環境変数はどうなっているか
+  -　どういう設定ファイルを設置しているか (ex. php.ini)
+  -　デフォルト命令はなにか  
+-　Docker Hubで公開されている
+
+### Dockerfile
+- 既存のイメージにレイヤーをさらに積み重ねるためのテキストファイル
+- 公開されているイメージ(ex. Ubuntu&PHP&.ini)にDockerfileでレイヤー(ex. Git)を乗せる感じ
+- GitHubで共有するなどして、チームメンバーで同一のコンテナを構築できる
+
+### Docker 基本コマンド　（最初の`docker`省略）
+- `container run [option] <image> [command]`: イメージからコンテナ起動　（=`image pull`&`container create`&`container start`）
+  - `--rm`オプション： コンテナが停止したとき自動削除
+  - `--detach`:バックグラウンドで実行
+  - `--name`: コンテナ名指定
+  - `--interactive`: コンテナの標準入力に接続（対話操作）
+  - `--tty`: 疑似ターミナルを割り当てる（対話操作）　（tty: 接続端末の名札のようなもの）
+  - `[command]`: デフォルトの命令ではなく、任意の命令を実行させる
+- `image build`: Dockerfileからイメージ作成（その後、`container run`）
+- `container exec`: コンテナに命令を送る
+- `compose up`: コマンドの手順書(Yamlファイル)に書かれたコマンド(`container run <image>`..)をまとめて実行して起動
+- `container ls`: コンテナ一覧
+- `container stop <container>`: コンテナ停止
+- `container rm <container>`: コンテナ削除　（`-f`で停止＆削除）
+
+### コンテナについて
+- コンテナは、メインプロセス（`PID`=1）を実行するために起動する
+- コンテナが停止するのは、コンテナを停止させたとき(stop) or メインプロセスが停止した時
+
+
+  - `--rm`オプション： コンテナが停止したとき自動削除
