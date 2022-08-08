@@ -64,31 +64,64 @@
   -　環境変数はどうなっているか
   -　どういう設定ファイルを設置しているか (ex. php.ini)
   -　デフォルト命令はなにか  
--　Docker Hubで公開されている
+-　Docker Hubで公開されているものから、検索して選ぶ
+  -　（＝`image pull`はせず、`container run`で`<image>`に`REPOSITORY:TAG`指定。`TAG`省略＝`latest`）
+  -　Tagページのバージョンを選んだ画面で見れるのはDockerfileの中身ではなく、Dockerfileによって積み上げられたレイヤーの情報
 
 ### Dockerfile
 - 既存のイメージにレイヤーをさらに積み重ねるためのテキストファイル
 - 公開されているイメージ(ex. Ubuntu&PHP&.ini)にDockerfileでレイヤー(ex. Git)を乗せる感じ
 - GitHubで共有するなどして、チームメンバーで同一のコンテナを構築できる
+- Dockerfileの有用性
+  - コンテナ内で行った操作は、コンテナ終了とともに全てなかったことになる
+  - Docker Hubにあるイメージは、レイヤーが最低限しか積み上がっていない
+  - 公式イメージでは十分なセットアップを得られない場合に、あらかじめ必要なセットアップを済ませたイメージを自分で作成するのが◎ 
+
+#### Dockerfile の命令
+- `FROM`: ベースイメージを指定
+- `RUN`: 任意のコマンドを実行しレイヤーを確定
+- `COPY`: ホストマシンのファイルをイメージに追加
+- `CMD`: デフォルト命令を指定
+
 
 ### Docker 基本コマンド　（最初の`docker`省略）
+#### container 操作
 - `container run [option] <image> [command]`: イメージからコンテナ起動　（=`image pull`&`container create`&`container start`）
   - `--rm`オプション： コンテナが停止したとき自動削除
   - `--detach`:バックグラウンドで実行
   - `--name`: コンテナ名指定
   - `--interactive`: コンテナの標準入力に接続（対話操作）
   - `--tty`: 疑似ターミナルを割り当てる（対話操作）　（tty: 接続端末の名札のようなもの）
+  - `--platform`: Docker Hubでのサポートプラットフォームと異なるプラットフォームを指定したい時（M1Macなら必須）
   - `[command]`: デフォルトの命令ではなく、任意の命令を実行させる
-- `image build`: Dockerfileからイメージ作成（その後、`container run`）
-- `container exec`: コンテナに命令を送る
-- `compose up`: コマンドの手順書(Yamlファイル)に書かれたコマンド(`container run <image>`..)をまとめて実行して起動
+
+- `container exec　[option] <container> <command>`: 起動中のコンテナに命令を送る（コンテナ内で実行するLinuxコマンド）　　
+  - `container run`でコマンド実行するのとは違う動きになる　
+    - `container run ubuntu:20.04 cat hoge.txt`と２度実行すると、同じイメージから異なるコンテナが起動する
+    - 対話操作(`bash`コマンド実行)には、`container run`時と同様のオプションが必要(`-it`)
+  -　コンテナの中にあるログを調べたり、Dockerfileを書く前にbashでインストールコマンドを試し打ちしたり、mysqlを直接操作したりできる
+
 - `container ls`: コンテナ一覧
 - `container stop <container>`: コンテナ停止
 - `container rm <container>`: コンテナ削除　（`-f`で停止＆削除）
 
+#### image 操作
+- `image build [option] <path>`: Dockerfileからイメージ作成（その後、`container run`）
+  - `--file`オプション：複数のDockerfileを使い分けるとき（`./Dockerfile`以外のDockerfile指定時）に、Dockerfileを指定
+  - `--tag`: 人間が把握しやすいように、ビルド結果にタグをつける 　（`REPOSITORY:TAG`の形）
+  - `<path>`: `COPY`で使うファイル指定時の相対パス
+- `image ls`: イメージ一覧(`image build` or `container run`の過程で取得されたイメージたち)
+- `image history [option] <image>`: イメージのレイヤーを確認
+
+#### compose 操作
+- `compose up`: コマンドの手順書(Yamlファイル)に書かれたコマンド(`container run <image>`..)をまとめて実行して起動
+
 ### コンテナについて
-- コンテナは、メインプロセス（`PID`=1）を実行するために起動する
-- コンテナが停止するのは、コンテナを停止させたとき(stop) or メインプロセスが停止した時
+- コンテナは、メインプロセス（`PID`=1）を実行するために起動する　　　（メインプロセス＝デフォルト命令？）
+- コンテナが停止するのは、
+  - コンテナを停止させたとき(`container stop`) or 
+  - メインプロセスが終了した時（`container run nginx:1.21 ls /etc/nginx`だと即時終了）
 
-
-  - `--rm`オプション： コンテナが停止したとき自動削除
+### Dockerfileをゼロから書く場合
+- 「ベースイメージをただ起動して`bash`で試す」（Dockerfileは書かず、`container run --rm ruby:3.1.1 bash`と打つ）
+- 「そこで動いたコマンドを Dockerfile にペーストする」というサイクルに
