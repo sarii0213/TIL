@@ -5,7 +5,7 @@
 - `docker compose up -d`　: バックグラウンドで起動
 - `docker ps`　: 起動しているコンテナ一覧
 - `docker attach <CONTAINER_NAME>`　: Ctrl+ p -> q　でdettach。exitで停止
-- `docker (compose) exec <SERVICE> <COMMAND>`　: 指定したservice （docker-compose.ymlに記載。webなど) の中で、指定したcommand （bashなど） を実行
+- `docker compose exec <SERVICE> <COMMAND>`　: 指定したservice （docker-compose.ymlに記載。webなど) の中で、指定したcommand （bashなど） を実行
 - `docker stop <CONTAINER_NAME>`：コンテナ停止
 - `docker compose down`: コンテナ停止 & `docker-compose up`で作成したコンテナ、ネットワーク、ボリューム、イメージを削除
 <br>
@@ -93,6 +93,7 @@
   - `--interactive`: コンテナの標準入力に接続（対話操作）
   - `--tty`: 疑似ターミナルを割り当てる（対話操作）　（tty: 接続端末の名札のようなもの）
   - `--platform`: Docker Hubでのサポートプラットフォームと異なるプラットフォームを指定したい時（M1Macなら必須）
+  - `--env`: コンテナに環境変数を設定
   - `[command]`: デフォルトの命令ではなく、任意の命令を実行させる
 
 - `container exec　[option] <container> <command>`: 起動中のコンテナに命令を送る（コンテナ内で実行するLinuxコマンド）　　
@@ -125,3 +126,9 @@
 ### Dockerfileをゼロから書く場合
 - 「ベースイメージをただ起動して`bash`で試す」（Dockerfileは書かず、`container run --rm ruby:3.1.1 bash`と打つ）
 - 「そこで動いたコマンドを Dockerfile にペーストする」というサイクルに
+
+### ボリューム
+- コンテナのデータをコンテナ削除とともに消失させないためのもの
+- `docker volume create [option]`
+  - `--name`:ボリューム名を指定- コンテナのデータをコンテナ削除とともに消失させないためのものsいてい
+- コンテナのデータをコンテナ削除とともに消失させ
