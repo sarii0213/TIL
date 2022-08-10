@@ -80,6 +80,7 @@
 #### Dockerfile の命令
 - `FROM`: ベースイメージを指定
 - `RUN`: 任意のコマンドを実行しレイヤーを確定
+  - 例） `apt-get install mariadb-client tzdata libvips`:MariaDB, タイムゾーンDB, libvipsをインストール
 - `COPY`: ホストマシンのファイルをイメージに追加
 - `CMD`: デフォルト命令を指定
 
