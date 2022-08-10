@@ -22,4 +22,4 @@
   https://toomeeto.hatenablog.com/entry/2019/07/05/110624
 
 ### RuboCop
-- `# rubocop:disable Metrics/MethodLength`: RuboCopにスルーしてもらいたい箇所を囲む
+- `# rubocop:disable Metrics/MethodLength`: RuboCopにスルーしてもらいたい箇所を適用ルール指定して囲む（`# rubocop:enable <same rule>`までがdisable範囲）
