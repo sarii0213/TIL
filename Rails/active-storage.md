@@ -28,3 +28,13 @@
 
 - 参考：
 https://qiita.com/itkrt2y/items/32ad1512fce1bf90c20b
+
+
+## Actibe Storage関連ヘルパー
+- ` rails_storage_proxy_path/url`: 特定の添付ファイルを明示的にプロキシする
+  - プロキシとは： リクエストに応じて、appサーバが、ストレージサービスからファイルをダウンロードする。（署名付きURLにリダイレクトすることなく、背後のストレージサービスからファイルを配信できるようになった）
+    - メリット：プロキシサーバにキャッシュが残るため、ファイル配信速度が上がる＆名前の指定によってサイズも指定できる?
+    
+  - デフォルトの挙動： Webサーバーから直接ファイルを配信していた。（→appサーバへの負荷減）　ActiveStorageが生成するファイル用のURLにアクセスすると、短時間だけ有効な署名付きURLにリダイレクトされる。
+  - [参考](https://techracho.bpsinc.jp/hachi8833/2021_07_30/110040)
+  - [rails github](https://github.com/rails/rails/pull/34477/files#diff-6d57479f3b0a37809da807fc49880b7edcd1067f64f0df24fef8bfdee3ee332eR113)
