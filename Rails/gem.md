@@ -1,4 +1,5 @@
 ## よく使うgem
+- capybara: テスティングフレームワーク。Webサイト上のユーザー操作をシミュレート。
 - sorcery: 認証機能
 - erb-lint: erbファイルを整える
 - annotate: テーブル情報をモデルに出力
