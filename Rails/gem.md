@@ -20,3 +20,6 @@
   同じ画像に同じワードを使ったコメントがあった場合、distinct: true がない場合同じ画像が２つ表示されてしまいます。  
   distinct: true を使っていれば、重複を削除しているので画像は１つのみの表示になります！  
   https://toomeeto.hatenablog.com/entry/2019/07/05/110624
+
+### RuboCop
+- `# rubocop:disable Metrics/MethodLength`: RuboCopにスルーしてもらいたい箇所を囲む
