@@ -61,6 +61,15 @@
 - `status %i[ready doing done].sample }`などとランダムになるように書く
 - テストがこけた時の再現方法：`rspec --seed 1234`のようにseed値を指定すればよい
 
+### システムテストでファイルの添付 (w/ capybara)
+ -`attach_file <locator> <file path>`
+ - locator: name, id, label text
+
+### reload
+- updateがちゃんとできるのかをテストをしたいときに使う
+- インスタンスの値を更新したい時に使う
+
+
 ## 参考
 - [RSpecスタイルガイド](https://github.com/willnet/rspec-style-guide)
 - [Clean Test Code Revised](https://speakerdeck.com/willnet/clean-test-code-revised)
