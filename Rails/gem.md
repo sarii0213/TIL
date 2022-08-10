@@ -5,6 +5,10 @@
 - pagy: ページネーション（kaminariより良い？）
 - pre-commit: コミット直前に走らせたいスクリプトを定義（選択肢に限りがあるため、pre-commitファイルを自作するのも◎）
 - ransack: 検索機能
+- lipvips: 画像処理（other choices: ImageMagick, GraphicsMagick, OpenCV） [詳細](https://tech.medpeer.co.jp/entry/2020/07/30/100000)
+- mysql2: MariaDBを使えるようにするgem。(railsに標準搭載gem)
+  - MariaDB: MySQLから派生したオープンソースのシステムで、MySQLと互換性がある＆より高速であることが多い。  [詳細](https://www.integrate.io/jp/blog/mariadb-vs-mysql-everything-you-need-to-know-ja/#what)
+- draper:  ヘルパーをオブジェクト指向的に書けるようにするgem。"デコレータ"。
 
 
 ## 各gemについて詳細
