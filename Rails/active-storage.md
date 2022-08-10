@@ -36,6 +36,8 @@ https://qiita.com/itkrt2y/items/32ad1512fce1bf90c20b
     - メリット：プロキシサーバにキャッシュが残るため、ファイル配信速度が上がる のみ？
     
   - デフォルトの挙動： Webサーバーから直接ファイルを配信していた。（→appサーバへの負荷減）　ActiveStorageが生成するファイル用のURLにアクセスすると、短時間だけ有効な署名付きURLにリダイレクトされる。
+  - ` rails_storage_proxy_path/url`の設定でどう変わるか
+    - img要素のsrc属性が、デフォルト（/rails/active_storage/representations/proxy/../*.jpg）からプロキシ（/rails/active_storage/blobs/redirect/../*.jpg"） に変わる	
   - [参考](https://techracho.bpsinc.jp/hachi8833/2021_07_30/110040)
   - [rails github](https://github.com/rails/rails/pull/34477/files#diff-6d57479f3b0a37809da807fc49880b7edcd1067f64f0df24fef8bfdee3ee332eR113)
   - [上記ヘルパーの引数について](https://stackoverflow.com/questions/69481547/rails-activestorage-how-to-get-variant-url-when-in-proxy-mode)
