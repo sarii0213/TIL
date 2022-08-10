@@ -15,7 +15,7 @@
   -  プレゼンテーション層：viewとモデルの中間に位置し、モデルのメソッドなどを駆使してビューに実装されやすい表示ロジック/フォーマットを記述する役割
 
 
-## 詳細
+## Draperの詳細
 - セットアップ：`rails g draper:install`  (`bundle install`後)
 - デコレータ作成：`rails g decorator <Model name>`
 - `delegate`: 該当Modelのメソッドが使えるようになる
