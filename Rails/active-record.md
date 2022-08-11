@@ -2,20 +2,30 @@
 - 複数形にしないとエラーになる、というわけではない
 - 慣習的にわかりやすい名前をつけてOK（「フォローしている人たち」なら"following" as seen in Twitter）
 
-## with_attached_images.includes(:user)
+## with_attached_<model_name>.includes(:user)
 
-`with_attached_images`メソッドを使うことで、内部的にincludes結合扱いになり、**N+1クエリ問題**を回避できる
+- `with_attached_images`メソッド(images=attachment_name)を使うことで、内部的にincludes結合扱いになり、**N+1クエリ問題**を回避できる
+- [with_attached_<attachment_name> 中身](https://github.com/rails/rails/blob/2895c6b9a22b856f2ba22e0866524162701886c1/activestorage/lib/active_storage/attached/model.rb#L73)
+- ↑ `scope :"with_attached_#{name}", -> { includes("#{name}_attachment": :blob) }` ←スコープの条件式で、関連付けられたblobのincludesを行なっている
+- has_one_attachedで結ばれているモデル同士以外のコントローラでは、このスコープはそのまま使えないが、スコープの条件式を応用すればOK
+- includesメソッドの引数：「配列」「ハッシュ」または「配列やハッシュをネストしたハッシュ」を指定。並列関係なら「配列」で横並び、A->Bに繋がるような関係なら「ハッシュ」または「配列やハッシュをネストしたハッシュ」
+- 例１）投稿たちに紐づく画像と投稿ユーザーと、ユーザーに紐づくアバターattachmentと、それに紐づくblobをeager loadingしたい  posts#index
+  - →　`Post.all.with_attached_images.includes(:user {avatar_attachment: :blob})` ← ネストしたハッシュ
+- 例２） 投稿コメントたちに紐づくユーザーと、ユーザーに紐づくアバターattachmentと、それに紐づくblobと、それに紐づくvariant_recordsをeager loadingしたい　　posts#show  
+  - →　`@comments = @post.comments.includes(user: { avatar_attachment: {blob: :variant_records } })` 	
 
-eager loading(一括読み込み)：  
+### eager loading(一括読み込み)：  
 Model.findによって返されるオブジェクトに関連付けられたレコードを、クエリの利用回数をできるかぎり減らして読み込むためのメカニズム。includesメソッドなどでeager loadingを実現。  
 includes: Active Recordは指定された全ての関連付けを最小限のクエリ回数で読み込む
 
 https://railsguides.jp/active_record_querying.html#%E9%96%A2%E9%80%A3%E4%BB%98%E3%81%91%E3%82%92eager-loading%E3%81%99%E3%82%8B　
 
+
 ## has_many関連付けで追加されるメソッド
 - `collection<<(object, ...)`：1つ以上のオブジェクトをコレクションに追加　
 - `collection.destroy(object)`：コレクションからオブジェクトを削除（:dependentオプションは無視される）
 - `collection_singular_ids`: コレクションに含まれるオブジェクトのidを配列にしたものを返す
+
 
 ## 自己結合
 自己結合（self-joining）関連付け：
@@ -33,6 +43,7 @@ class Employee <  ApplicationRecord
 	belongs_to :manager, class_name: “Employee”, optional: true
 ```
 https://railsguides.jp/association_basics.html#%E8%87%AA%E5%B7%B1%E7%B5%90%E5%90%88
+
 
 ## マイグレーションにおいて参照先テーブル名を自動で推定できないカラムを外部キーとして指定
 
