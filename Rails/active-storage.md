@@ -29,6 +29,8 @@
 - 参考：
 https://qiita.com/itkrt2y/items/32ad1512fce1bf90c20b
 
+### Active Storage & N + 1 問題
+- [解説](https://blog.saeloun.com/2020/03/06/eagerload-active-storage-models.html)
 
 ## Actibe Storage関連ヘルパー
 - ` rails_storage_proxy_path/url`: 特定の添付ファイルを明示的にプロキシする
