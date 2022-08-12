@@ -7,12 +7,15 @@
 - `with_attached_images`メソッド(images=attachment_name)を使うことで、内部的にincludes結合扱いになり、**N+1クエリ問題**を回避できる
 - [with_attached_<attachment_name> 中身](https://github.com/rails/rails/blob/2895c6b9a22b856f2ba22e0866524162701886c1/activestorage/lib/active_storage/attached/model.rb#L73)
 - ↑ `scope :"with_attached_#{name}", -> { includes("#{name}_attachment": :blob) }` ←スコープの条件式で、関連付けられたblobのincludesを行なっている
+- [最新版rails](https://edgeapi.rubyonrails.org/classes/ActiveStorage/Attachment.html)では、`with_attached_`
 - has_one_attachedで結ばれているモデル同士以外のコントローラでは、このスコープはそのまま使えないが、スコープの条件式を応用すればOK
 - includesメソッドの引数：「配列」「ハッシュ」または「配列やハッシュをネストしたハッシュ」を指定。並列関係なら「配列」で横並び、A->Bに繋がるような関係なら「ハッシュ」または「配列やハッシュをネストしたハッシュ」
-- 例１）投稿たちに紐づく画像と投稿ユーザーと、ユーザーに紐づくアバターattachmentと、それに紐づくblobをeager loadingしたい  posts#index
+- 例１）投稿たちに紐づく画像と投稿ユーザーと、ユーザーに紐づくアバター情報をeager loadingしたい  posts#index
   - →　`Post.all.with_attached_images.includes(:user {avatar_attachment: :blob})` ← ネストしたハッシュ
-- 例２） 投稿コメントたちに紐づくユーザーと、ユーザーに紐づくアバターattachmentと、それに紐づくblobと、それに紐づくvariant_recordsをeager loadingしたい　　posts#show  
-  - →　`@comments = @post.comments.includes(user: { avatar_attachment: {blob: :variant_records } })` 	
+  -  indexでは、投稿ごとに**１つ**のusers→attachments→blobs→variants テーブルがロードされる
+- 例２） 投稿コメントたちに紐づくユーザーと、ユーザーに紐づくアバター情報と、それに紐づくvariant_recordsをeager loadingしたい　　posts#show  
+  - →　`@comments = @post.comments.includes(user: { avatar_attachment: {blob: :variant_records } })` 
+  - showでは、投稿ごとに**複数**のcomments→users→attachments→blobs→variantsテーブルがロードされる	
 
 ### eager loading(一括読み込み)：  
 Model.findによって返されるオブジェクトに関連付けられたレコードを、クエリの利用回数をできるかぎり減らして読み込むためのメカニズム。includesメソッドなどでeager loadingを実現。  
