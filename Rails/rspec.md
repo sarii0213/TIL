@@ -1,3 +1,7 @@
+## RSpec
+
+- https://qiita.com/tofuonfire/items/cc45eb35704d898ee592
+
 ### let!とbeforeの違い  
 - let, let! -> インスタンス変数の定義、生成後に参照したいもの （なるべくlet!を利用。可読性◎）   
 - before -> メソッドの定義    
