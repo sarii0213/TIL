@@ -69,3 +69,18 @@ https://qiita.com/kymmt90/items/03cb9366ff87db69f539
 https://sil.hatenablog.com/entry/rubocop-rails-inverse-of
 https://railsguides.jp/association_basics.html#%E5%8F%8C%E6%96%B9%E5%90%91%E9%96%A2%E9%80%A3%E4%BB%98%E3%81%91　
 
+## validates + inclusion
+- `validates :read, inclusion: { in: [true, false] }` 
+- inclusionヘルパー：指定の集合に属性の値が含まれているかどうかを検証。集合には任意のenumerableオブジェクトが使える。
+
+## validates + format
+- `validates :url, presence: true, format: /\A#{URI::DEFAULT_PARSER.make_regexp(%w[http https])}\z/`
+- `URI::DEFAULT_PARSER.make_regexp(%w[http https])`: http, httpsが含まれたURIを検出するための正規表現を生成
+- validates formatを使う場合は\A〜\zでくくる（`\A`: 入力の先頭, `\z`：入力の末尾, `//`:正規表現部分を示す）
+- `format: { with: /\A#{URI::DEFAULT_PARSER.make_regexp(%w[http https])}\z/ }`のショートカット版が↑
+
+## delegate
+- `delegate :title, to: :notification, prefix: true`
+- メソッドを異なるクラス間で簡単に使えるようにするマクロ的な使い方ができる
+- `prefix: true`で、delegate先のオブジェクトをプリフィックスに設定
+
