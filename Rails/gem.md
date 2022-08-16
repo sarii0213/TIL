@@ -10,7 +10,8 @@
 - mysql2: MariaDBを使えるようにするgem。(railsに標準搭載gem)
   - MariaDB: MySQLから派生したオープンソースのシステムで、MySQLと互換性がある＆より高速であることが多い。  [詳細](https://www.integrate.io/jp/blog/mariadb-vs-mysql-everything-you-need-to-know-ja/#what)
 - draper:  ヘルパーをオブジェクト指向的に書けるようにするgem。"デコレータ"。
-
+- letter_opener_web: 開発環境でメール送信機能の挙動をブラウザでチェックできる
+- config: 定数管理
 
 ## 各gemについて詳細
 
@@ -24,3 +25,16 @@
 
 ### RuboCop
 - `# rubocop:disable Metrics/MethodLength`: RuboCopにスルーしてもらいたい箇所を適用ルール指定して囲む（`# rubocop:enable <same rule>`までがdisable範囲）
+
+### letter_opener_web
+- [使い方](https://qiita.com/tanutanu/items/c6193c4c2c352ac152ec)
+- [Mounting the engine](https://guides.rubyonrails.org/engines.html#mounting-the-engine)
+
+### config
+- `bundle` -> `rails g config:install`
+- [使い方](https://qiita.com/tanutanu/items/8d3b06d0d42af114a383)
+- 定数管理の意義  
+  - 環境ごとに違う定数を用いたい
+  - いろいろなところに散らばる定数をまとめたい
+  - 大規模アプリケーションの構築時
+- configの特徴：yml形式で定数管理
