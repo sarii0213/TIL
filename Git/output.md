@@ -25,3 +25,7 @@ pre-commit gemを教えてもらった（ただ、RuboCop＆RSpecのみの対応
     - `git stash list`
 - stash適用＆一覧から削除
     - `git stash pop stash@{STASH_NUM}`
+
+## オートコンプリートを有効にするとめっちゃ良い
+
+https://apple.stackexchange.com/questions/55875/git-auto-complete-for-branches-at-the-command-line
