@@ -42,11 +42,14 @@ def comment_post
 
 - メールのやりとり：作成されたメールは、一旦ASCII文字（7bit）に変換（エンコード）した上で送信し、受信側で再び元の表示形式に復元（デコード）している
 
-- メール本文とメールヘッダ（件名や送信者名など）では変換ルールが異なる
-  - メール本文の文字コードの定義
-    - 文字セット（charsest）にUTF-8などの8bit文字を利用する場合、UTF-8と7bit文字(ASCII) の相互変換を行う必要があり、そのエンコード方式を指定するヘッダがContent-Transfer-Encoding。
+- メールの構成要素：ヘッダー、ボディ、CRLF（改行空白文字）
+
+- ヘッダ（件名や送信者名など）とボディでは変換ルールが異なる
   - メールヘッダの文字コードの定義
     - Subjectヘッダに文字セット（UTF-8など）とエンコード方式（Base64など）が指定される  
+  - メール本文の文字コードの定義
+    - 文字セット（charsest）にUTF-8などの8bit文字を利用する場合、UTF-8と7bit文字(ASCII) の相互変換を行う必要があり、そのエンコード方式を指定するヘッダがContent-Transfer-Encoding。
+  
 
 - multipart形式（html+text）はidentity encoding（＝エンコードなし）を利用
 
@@ -84,9 +87,9 @@ irb(main):056:0> mail.body.to_s
         encoded_parts = parts.map { |p| p.encoded }
         ([preamble] + encoded_parts).join(crlf_boundary) + end_boundary + epilogue.to_s
       else  # only html.erb or only txt.erb
-        dec = Mail::Encodings.get_encoding(encoding) # dec = 8bit
+        dec = Mail::Encodings.get_encoding(encoding) # encoding = 8bit, dec = Mail::Encodings::EightBit
         enc =
-          if Utilities.blank?(transfer_encoding)     # enc = 8bit
+          if Utilities.blank?(transfer_encoding)     # enc = Mail::Encodings::EightBit
             dec
           else
             negotiate_best_encoding(transfer_encoding)
@@ -108,7 +111,7 @@ irb(main):056:0> mail.body.to_s
       end
     end
 ```
-
+8bitでデコードして、UTF-8でエンコードしている？？
 
 ### decoded
 - オブジェクトのバリュー（本文）のみを文字列として返す
