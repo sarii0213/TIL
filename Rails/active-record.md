@@ -84,3 +84,84 @@ https://railsguides.jp/association_basics.html#%E5%8F%8C%E6%96%B9%E5%90%91%E9%96
 - メソッドを異なるクラス間で簡単に使えるようにするマクロ的な使い方ができる
 - `prefix: true`で、delegate先のオブジェクトをプリフィックスに設定
 
+## ポリモーフィック関連
+[![Image from Gyazo](https://i.gyazo.com/7ad4545cb4f1b8bb8827877f58e453e1.png)](https://gyazo.com/7ad4545cb4f1b8bb8827877f58e453e1)
+- SQLアンチパターン
+  - 外部キーの設定（外部キー制約）ができないため、テーブルが紐づく対象についてDBレベルでデータの整合性を保証することができない
+  - 整合性の保持が完全にアプリケーション側に依存する
+    - アプリケーション側での整合性保持：`dependent:`オプション、`uniqueness: true`などのDBバリデーション機能
+    - → SQLを直で触ったり、アプリ側でのパリデーションに不備があると、不正な状態でのデータ入力ができてしまう
+- ただ、RailsのActiveRecordなどの一部のORマッパーはこのポリモーフィック関連をサポートしているため、Railsを使用する際にはこの方法を使用することを推奨
+
+- ポリモーフィックとは、ダックタイピングの一種
+  - ダックタイピング：複数のクラスのインターフェースを統一し、同じように扱えるようにすること
+    - → コードを簡潔に、拡張性を保って書くことができる
+- Railsのポリモーフィックが便利なのは「一つのモデルを同じインターフェースを持ったものが扱う（ダックタイピングする）」場合
+  - モデルを追加する時も、同様のインターフェイス（＝振る舞い、入出力の定義…属性・メソッドのこと？）を持ったモデルを追加するだけでOK.既存コードをいじる必要なし
+
+- 関連付けの方法：インターフェースを設定（↓インターフェース：`imageable`）
+  
+  ```rb
+  class Picture < ApplicationRecord
+    belongs_to :imageable, polymorphic: true
+  end
+
+  class Employee < ApplicationRecord
+    has_many :pictures, as: :imageable
+  end
+
+  class Product < ApplicationRecord
+    has_many :pictures, as: :imageable
+  end
+  ```
+
+  外部キーのカラムと型のカラムを両方宣言
+  ```rb
+  class CreatePictures < ActiveRecord::Migration[7.0]
+    def change
+      create_table :pictures do |t|
+        t.string  :name
+        t.bigint  :imageable_id
+        t.string  :imageable_type
+        t.timestamps
+      end
+
+      add_index :pictures, [:imageable_type, :imageable_id]
+    end
+  end
+  ```
+  - ↑ `t.references :imageable, polymorphic: true`をcreate_tableブロックに書く方法だと`add_index`不要
+    - `:imageable_type`: 紐づけるモデル名(ex. `employee`, `product`)
+    - `:imageable_id`: FK値。紐づくインスタンスのID（ex. = `employees.id`）
+  - `@employee.pictures` → 写真のコレクションをEmployeeモデルのインスタンスから取得
+  - `@picture.imageable` → Pictureモデルのインスタンスから親のインスタンスを取得
+
+- [複数のテーブルに対して多対一で紐づくテーブルの設計アプローチ](https://spice-factory.co.jp/development/has-and-belongs-to-many-table/)
+- [Railsのポリモーフィック関連とはなんなのか](https://qiita.com/itkrt2y/items/32ad1512fce1bf90c20b#%E9%96%93%E9%81%95%E3%81%A3%E3%81%9F%E3%83%9D%E3%83%AA%E3%83%A2%E3%83%BC%E3%83%95%E3%82%A3%E3%83%83%E3%82%AF)
+
+## enum
+- 列挙型
+- モデルの数値カラムに対して文字列による名前定義をマップすることができる
+- データ操作用の便利なメソッドも提供
+- モデルでのenum定義方法
+  - 名前定義（文字列）のみ指定  
+    - `enum rate: [ :good, :normal, :bad ]`
+    - 配列左から順に0, 1, 2と数値が割り当てられる
+  - 名前定義と対応する数値を指定
+    - `enum rate: { good: 0, normal: 1, bad: 2 }`
+- 一番最初に宣言した値をデフォルト値としてモデルに定義することを推奨
+    - migration file `t.integer :rate, default: 0`
+- integerでなくboolean型のカラムにenumを定義するとDB更新時エラーになる
+  - falseに更新しようとすると、NULLが入り、更新処理中断しロールバックする
+- 定義済みのenumの参照方法
+  - カラム名に`s`をつければOK
+    - `Rating.rates` -> ハッシュ形式でenumの定義取得
+      - 定義項目の抽出可能。定義していない項目を取得しようとすると**nilが返る**
+- 便利メソッド
+  - `.<enum string>?`： 指定の名前定義か確認メソッド
+  - `.<enum string>!`：　指定の名前定義に更新メソッド
+  - `.<enum string>`：　データベースを検索メソッド（名前定義と同名のscopeが割り当てられている）
+    - `.not_<enum string>`メソッドも使える
+- 名前定義重複時の対応
+  - `_prefix:_ true`, `_suffix: :sample`など、接頭辞・接尾辞を付与可能
+- [Enumってどんな子？使えるの？](https://qiita.com/ozackiee/items/17b91e26fad58e147f2e)

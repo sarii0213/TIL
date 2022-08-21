@@ -24,6 +24,35 @@ https://blog.saeloun.com/2021/09/28/ruby-allow-value-omission-in-hash-literals.h
 
 <br>
 ショートハンド記法（さまざまな条件が重なったときに適用可能）
+
 ```ruby
 <%= render @products %>
+```
+
+## collection_check_boxes モデルからチェックボックスを自動生成
+```rb
+collection_check_boxes(object, method, collection, value_method, text_method, options = {}, html_options = {}, &block)
+```
+`object`のクラスの、`method`の値として存在するもののコレクションのチェックボックスタグを返す。
+インスタンス`object`の`method`の戻り値が選択された状態になる。
+`method`がnilを返す場合、なんも選択されていない状態で表示される。
+`:value_method`と`:text_method`パラメータは、`collection`の各メンバーで呼び出される。
+その戻り値は、それぞれチェックボックスタグの`value`属性とボックス横の表示テキスト。
+
+例）
+```rb
+<%= form_with model: @user, url: mypage_notification_setting_path do |f| %>
+  <%= f.collection_check_boxes :notification_timing_ids, NotificationTiming.all, :id, :timing_type do |b| %>
+  ...
+```
+- object：`@user` 
+- method：`:notification_timing_ids`  
+  （`{ on_commented: 1, on_liked: 2, on_followed: 3 }`を、ハッシュ形式でenumの定義取得）
+- collection：`NotificationTiming.all`
+- value_method: `:id`
+- text_method：`:timing_type`
+
+生成されるinputタグ
+```html
+<input id="user_notification_timing_ids_1" name="user[notification_timing_ids][]" type="checkbox" value="1" checked="checked">
 ```
