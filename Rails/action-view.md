@@ -53,7 +53,7 @@ collection_check_boxes(object, method, collection, value_method, text_method, op
 ```
 - object：`@user` 
 - method：`:notification_timing_ids`  
-  （`{ on_commented: 1, on_liked: 2, on_followed: 3 }`を、ハッシュ形式でenumの定義取得）Use
+  （`user.notification_timing_ids`で、ユーザーの持つ通知タイミングIDを取得。`user.notification_timing_ids = 2`で通知設定を更新。`user.update(notification_timing_ids: 2)`だと、バリデーションを通って通知設定を更新。）
 - collection：`NotificationTiming.all` （checkboxのvalue値とテキスト要素のコレクション）
 - value_method: `:id` (`<object>_<>method>_<id num>`の形でidが振られる)
 - text_method：`:timing_type` (enumの文字列)

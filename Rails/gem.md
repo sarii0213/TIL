@@ -15,6 +15,7 @@
 - redis: データ永続化・セッション＆キャッシュ処理の高速化
 - sidekiq: ジョブの非同期処理（バックエンドでのジョブキュー管理にredisが必要）
 - enum_help: enumの国際化
+- meta-tags: SEO対策
 
 ## 各gemについて詳細
 
@@ -112,3 +113,15 @@
 - RailsサーバとRedisとSidekiqの関係：Railsサーバの処理の中で「後で処理するリスト」に任せたいジョブがあれば、Redisで永続化しているキューにジョブを追加（エンキュー）し、Sidekiqがジョブを取り出して（デキュー）実行していく
 - ↑これらのキュー操作をさまざまな方法で実行するためにインターフェースなどを定めているフレームワークがActive Job
 - [わかりやすい解説](https://dev.icare.jpn.com/dev_cat/sidekiq/)
+
+### meta-tags
+  - app/helpers/application_helper.rbにデフォルト設定をハッシュで記述
+  -  `canonial`: サイト内に重複コンテンツ・類似URLが複数存在する際に、評価してほしいURLがどれかを検索エンジンに示し、１つのページにリンク評価を集約させる役割
+  - `og`: Open Graph。SNSでシェアした際に、Webページのタイトルや概要、イメージ画像、URL含めた詳細情報を伝えられる形式にする設定。
+  - `og:title: :full_title`: サイトに表示される`<title>`と全く同じものを表示
+  - `request.original_url` : プロトコル（http, https以外も可）＋フルパス を返す
+  - 参考
+    - [canonical（カノニカル）タグとは？](https://www.willgate.co.jp/promonista/seo-canonical/)
+    - [【Rails】『meta-tags』gemを使ってSEO対策をおこなう方法](http://vdeep.net/rubyonrails-meta-tags-seo)
+    - [【前編】Rails で SEO 対策が捗る gem たち](https://tech.basicinc.jp/articles/145)
+    - [Railsのrequestで取得できる情報の具体例をまとめた](https://l-light-note.hatenablog.com/entry/2018/04/26/140301)

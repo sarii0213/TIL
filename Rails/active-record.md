@@ -158,10 +158,10 @@ https://railsguides.jp/association_basics.html#%E5%8F%8C%E6%96%B9%E5%90%91%E9%96
     - `Rating.rates` -> ハッシュ形式でenumの定義取得
       - 定義項目の抽出可能。定義していない項目を取得しようとすると**nilが返る**
 - 便利メソッド
-  - `.<enum string>?`： 指定の名前定義か確認メソッド
-  - `.<enum string>!`：　指定の名前定義に更新メソッド
-  - `.<enum string>`：　データベースを検索メソッド（名前定義と同名のscopeが割り当てられている）
-    - `.not_<enum string>`メソッドも使える
+  - `.<enum_string>?`： 指定の名前定義か確認メソッド
+  - `.<enum_string>!`：　指定の名前定義に更新メソッド
+  - `.<enum_string>`：　データベースを検索メソッド（名前定義と同名のscopeが割り当てられている）
+    - `.not_<enum_string>`メソッドも使える
 - 名前定義重複時の対応
   - `_prefix:_ true`, `_suffix: :sample`など、接頭辞・接尾辞を付与可能
 - [Enumってどんな子？使えるの？](https://qiita.com/ozackiee/items/17b91e26fad58e147f2e)

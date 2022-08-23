@@ -2,6 +2,16 @@
 
 - https://qiita.com/tofuonfire/items/cc45eb35704d898ee592
 
+### before(:suite)でRSpec実行後最初の処理を記述
+(spec/rails_helper)
+```rb
+ config.before :suite do
+    system 'bin/rails db:seed'
+ end
+```
+- RSpecプロセスの一番最初に、初期データの投入処理を行う
+- `system`: シェルコマンドの実行メソッド（`%x[]`やバッククオートで囲んでもOK）
+
 ### let!とbeforeの違い  
 - let, let! -> インスタンス変数の定義、生成後に参照したいもの （なるべくlet!を利用。可読性◎）   
 - before -> メソッドの定義    
