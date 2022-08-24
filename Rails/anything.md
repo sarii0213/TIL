@@ -10,3 +10,7 @@
 - AWSのElastiCacheというサービスがあって、それを使うことが多い
 - ElastiCache: Redis（など）のフルマネージドなサービス
 - フルマネージド：細かいメンテナンスが不要のRedisみたいなイメージ。AWSがよろしく面倒を見てくれるようなイメージ。サーバーレスよりは触れる範囲広い。
+
+## cheat sheets
+- [Ruby on Rails Cheatsheet](https://gist.github.com/mdang/95b4f54cadf12e7e0415)
+- [Ruby-Cheatsheet](https://github.com/lifeparticle/Ruby-Cheatsheet)
