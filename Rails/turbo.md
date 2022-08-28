@@ -1,4 +1,8 @@
 # Hotwire
+
+## hotwire example templates
+- [thoughtbot github](https://github.com/thoughtbot/hotwire-example-template)
+
 ## 全体像
 - Turbo: Hotwireの中核となるJSライブラリ。Turboを使うとJSを書かずにSPAのようなインタラクティブなアプリケーションが作成可能
   - Turbo Drive
