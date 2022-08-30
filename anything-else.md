@@ -13,5 +13,6 @@ require './db/seeds/posts'
 - JS in HTML
 - Reactは１ファイルに記述できない ＆ "HTML in JS" & jsxという記法が特徴
 
-## DB設計
-- 多対多の関連を表現するのに、中間テーブルをおく
+## Markdownで画像表示
+1. GitHubに画像アップロード
+2. `![alt name](url..?raw=true)`と画像URLに`?raw=true`をつければOK
