@@ -148,3 +148,4 @@
 - [3時間で学ぶSQL-Udemy](https://www.udemy.com/share/102p3S3@uo34QJE26jZ0ROIfIKR5Itw2V892EKNwyj9gXEIqveZRWG-tamx3xkrr5tN62t1o7Q==/)
 - [楽々ERDレッスン 第1回：「お持ち帰りご注文用紙」編](https://codezine.jp/article/detail/154)
 - [レシートで学ぶデータモデリング入門](https://future-architect.github.io/articles/20200616/)
+- [若手プログラマー必読！５分で理解できるER図の書き方５ステップ](https://it-koala.com/entity-relationship-diagram-1897#i-4)
