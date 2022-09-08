@@ -16,3 +16,10 @@ require './db/seeds/posts'
 ## Markdownで画像表示
 1. GitHubに画像アップロード
 2. `![alt name](url..?raw=true)`と画像URLに`?raw=true`をつければOK
+
+## MySQL環境構築
+- `mysql --version`で存在確認
+- なければ`brew install mysql`
+- 動作確認は`sudo mysql.server start`->`mysql -u root -p`でパスワード入力
+- 終了するには、`> exit`->`sudo mysql.server stop`
+
