@@ -31,10 +31,10 @@
 1. プロジェクトのクローン
 2. rubyとnodeのバージョンを合わせる
 3. `bundle install --path vendor/bundle`
-4. `yarn`（package.jsonに記述されたJSパッケージのインストール）
+4. `yarn`（package.jsonに記述されたJSパッケージ/モジュールのインストール）
 5. `cp config/database.yml.default config/database.yml` → username, passwordをMySQLの自分の設定に書き換え
 6. MySQLの起動（`sudo mysql.server start`）
-7. Redisの起動（`redis-server`）
+7. Redisの起動（`redis-server`。Ctrl+cで終了。）
  セッションなど有効期限のあるデータを扱う場合
  ランキングデータなど重たいSQLを走らせないといけない処理を扱う場合
 8. `bin/rails db:create`
@@ -42,3 +42,9 @@
 10. `bin/rails db:seed_fu` （初期データを入れるのに◎。すでに存在しているが変更したいレコードだけ更新したり、ファイル単位で実行できたり。`db:seed`だと実行毎に同じデータが登録されてしまう）
 11. `bin/webpack-dev-server`（webpackerのサーバーを立ち上げてcssやjsをリアルタイムで反映）
 12. `bin/rails s`
+
+
+#### 環境構築ではまったこと
+- `bundle`実行時に、libv8, mini_racerのインストールでエラーが発生
+- 結局、`bundle update` → `bundle install`を行った。（※ Gemfile.lockはGitHubにコミットしないよう注意）
+- [参考？](https://blog.dnpp.org/libv8_build_still_difficult_in_2021)
