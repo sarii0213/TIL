@@ -43,6 +43,13 @@
 11. `bin/webpack-dev-server`（webpackerのサーバーを立ち上げてcssやjsをリアルタイムで反映）
 12. `bin/rails s`
 
+### 環境構築（Docker使う場合）
+- `docker-compose exec web bash`
+- `bin/rails db:create`
+- `bin/rails db:migrate`
+- `bin/rails db:seed_fu`
+- `docker-compose up`
+
 
 #### 環境構築ではまったこと
 - `bundle`実行時に、libv8, mini_racerのインストールでエラーが発生
