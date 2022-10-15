@@ -31,6 +31,7 @@
 - `# rubocop:disable Metrics/MethodLength`: RuboCopにスルーしてもらいたい箇所を適用ルール指定して囲む（`# rubocop:enable <same rule>`までがdisable範囲）
 
 ### letter_opener_web
+- [Railsで開発環境に gem letter_opener_web を導入](https://zenn.dev/junki555/articles/9e324dbefcecde)
 - [使い方](https://qiita.com/tanutanu/items/c6193c4c2c352ac152ec)
 - [Mounting the engine](https://guides.rubyonrails.org/engines.html#mounting-the-engine)
 

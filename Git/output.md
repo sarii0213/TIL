@@ -1,3 +1,6 @@
+## pullできない時
+stashするか、取り消していい変更なら`git checkout HEAD .`
+
 ## pre-commit
 commit毎に、RSpec, erblint, RuboCopを回すのがめんどくさい  
 pre-commit gemを教えてもらった（ただ、RuboCop＆RSpecのみの対応）    
@@ -21,6 +24,8 @@ pre-commit gemを教えてもらった（ただ、RuboCop＆RSpecのみの対応
 	`git stash push -- FILE_PATH`
 - ステージに上げてない全ファイルのstash 〜メッセージを添えて〜
     - `git stash -u “STASH_MESSAGE”`
+- メッセージを添えてstash
+  - `git stash push -m "MESSAGE"`
 - stash一覧表示
     - `git stash list`
 - stash適用＆一覧から削除
