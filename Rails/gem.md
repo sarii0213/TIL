@@ -16,6 +16,7 @@
 - sidekiq: ジョブの非同期処理（バックエンドでのジョブキュー管理にredisが必要）
 - enum_help: enumの国際化
 - meta-tags: SEO対策
+- seed_fu: 初期データの投入
 
 ## 各gemについて詳細
 
@@ -126,3 +127,6 @@
     - [【Rails】『meta-tags』gemを使ってSEO対策をおこなう方法](http://vdeep.net/rubyonrails-meta-tags-seo)
     - [【前編】Rails で SEO 対策が捗る gem たち](https://tech.basicinc.jp/articles/145)
     - [Railsのrequestで取得できる情報の具体例をまとめた](https://l-light-note.hatenablog.com/entry/2018/04/26/140301)
+
+### seed_fu
+- [seed_fuを使う](https://zenn.dev/d0ne1s/scraps/6fa88ad6c4ea85)

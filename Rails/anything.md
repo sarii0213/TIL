@@ -1,3 +1,14 @@
+## URLパラメータの付与
+- `root_path(after_sign_in: true)`のようにすると、`root_path`のURLに`?after_sign_in=true`というパラメータを付与できる
+
+## featureブランチでのmigrationのミスの対処
+- featureブランチでのミス（カラム名のタイプミスなど）は、マイグレーションファイルに残さず、正しい処理のみ残すようにする
+  - （`rails db:migrate:reset`すれば正しいテーブル設計が反映される）
+
+## 使い捨てスクリプト
+- [使い捨てのスクリプトの置き場の名前のはoneshotがよさそう](https://shinkufencer.hateblo.jp/entry/2019/08/19/000000)
+
+
 ## scopeとクラスメソッドの使い分け ❔
 - scope 使い回すもの
 - クラスメソッド 使い回さないもの

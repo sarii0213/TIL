@@ -1,5 +1,8 @@
 ## pullできない時
-stashするか、取り消していい変更なら`git checkout HEAD .`
+- stashする
+- 取り消していい変更なら`git checkout HEAD .`
+- ファイルが１個とかなら、`git restore <file>`
+  - [Git初心者なら必ず覚えるべきgit restoreコマンド](https://iwb.jp/git-restore-s-head-commit-fix/)
 
 ## pre-commit
 commit毎に、RSpec, erblint, RuboCopを回すのがめんどくさい  
