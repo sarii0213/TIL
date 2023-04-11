@@ -97,20 +97,20 @@
   - `--env`: コンテナに環境変数を設定
   - `--mount type=<bind/volume>, src=<dir_of_host_machine/volume_name>, dst=<dir_of_container>`:マウントする（丁寧に指定＆Docker Composeに転用しやすい）
   - `--volume`:マウントする（短く指定）
-  - `--publish　<host machine>:<container>`: コンテナのポートをホストマシンに公開する
+  - `--publish <host machine>:<container>`: コンテナのポートをホストマシンに公開する
   - `--network`: コンテナをネットワークに接続
   - `--network-alias`: コンテナにネットワーク内でのエイリアスを設定
   - `[command]`: デフォルトの命令ではなく、任意の命令を実行させる
 
-- `container exec　[option] <container> <command>`: 起動中のコンテナに命令を送る（コンテナ内で実行するLinuxコマンド）　　
-  - `container run`でコマンド実行するのとは違う動きになる　
+- `container exec [option] <container> <command>`: 起動中のコンテナに命令を送る（コンテナ内で実行するLinuxコマンド）
+  - `container run`でコマンド実行するのとは違う動きになる
     - `container run ubuntu:20.04 cat hoge.txt`と２度実行すると、同じイメージから異なるコンテナが起動する
     - 対話操作(`bash`コマンド実行)には、`container run`時と同様のオプションが必要(`-it`)
-  -　コンテナの中にあるログを調べたり、Dockerfileを書く前にbashでインストールコマンドを試し打ちしたり、mysqlを直接操作したりできる
+  - コンテナの中にあるログを調べたり、Dockerfileを書く前にbashでインストールコマンドを試し打ちしたり、mysqlを直接操作したりできる
 
 - `container ls`: コンテナ一覧
 - `container stop <container>`: コンテナ停止
-- `container rm <container>`: コンテナ削除　（`-f`で停止＆削除）
+- `container rm <container>`: コンテナ削除（`-f`で停止＆削除）
 
 #### image 操作
 - `image build [option] <path>`: Dockerfileからイメージ作成（その後、`container run`）

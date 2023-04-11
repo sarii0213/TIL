@@ -33,12 +33,18 @@ git pull origin develop
   - 例） `git stash save "after building env"`
   - tigが便利らしい [tigでgitをもっと便利に！ addやcommitも](https://qiita.com/suino/items/b0dae7e00bd7165f79ea)
 
-### 秘密情報
+### 秘密情報（予約時）
 - クレジットカード
-  - カード番号：4242 4242 4242 4242
+  - カード番号：1
   - 有効期限：未来の日付
   - セキュリティコードは123（なんでもよかったかも）
 
+### 診察予約時のエラー回避
+app/forms/online_clinic/clinics/create_reservation_form.rb:20
+```
+# @examination.web_mtg_url = @examination.create_mtg_url(doctor_schedule)
+@examination.web_mtg_url = 'https://www.google.com/'
+```
 
 ### Gemfile.lock
 branch: issue-2099/delete_doc_picture_from_cancellation_mail
@@ -68,9 +74,14 @@ branch: issue-2099/delete_doc_picture_from_cancellation_mail
 - `bin/rails s`や`bin/rails db`が実行できることを確認
 - issueに取り組む
 
-#### issueに取り組む準備
+### issueに取り組む準備
 - MySQL起動していなかったら`sudo mysql.server start`
 - Redis起動していなかったら`redis-server`
 - Sidekiq起動していなかったら`bundle exec sidekiq`
 - `bin/webpack-dev-server`
 - `bin/rails s`
+
+### featureブランチでのmigrationのミスの対処
+- featureブランチでのミス（カラム名のタイプミスなど）は、マイグレーションファイルに残さず、正しい処理のみ残すようにする
+  - （`rails db:migrate:reset`すれば正しいテーブル設計が反映される）
+

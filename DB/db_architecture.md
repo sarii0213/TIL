@@ -1,3 +1,8 @@
+## Mermaid記法（ER図作成）
+- [【VSCode・Mermaid.js】ER図もVSCodeとgitで管理がしたい！](https://zenn.dev/kazukimatsuzaki/articles/84b0b9fbc88d03)
+- [Mermaid Live Editor](https://mermaid-js.github.io/mermaid-live-editor/edit#pako:eNptUDFyAjEM_IpHNXzAdVKkpnWjYAGeOUs3lgzJHPf3-IjHUNBptdLuSgscJRJ4oPKR8FwwBw5clYq73_d7Wdwsas47ubEGfoBO1DmKbNQFta-s75jOLYG55u9WpRhYrSQ-u41hzDQalDFNA82oepPS5tdN5-H-VseSTU8Rox8bU7MkNh3wKkYHQ6vaRXvYp-yW6Su-7Ku9wCtOtTmtsINMpaWN7Xlt2bkAdqF2CvhWnqSQWoD_Sawmh18-grdSaQfNE436w8GfcNLR_YzJpPTm-gdPUpys)
+- [Mermaid Docs](https://mermaid-js.github.io/mermaid/#/entityRelationshipDiagram)
+
 ## DB設計
 - 多対多の関連を表現するのに、中間テーブルをおく
 - 実際の開発では、UIを最初に設計してから、その**インターフェースと機能を実現するシステムのDBを設計する**のが良い
