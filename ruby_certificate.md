@@ -1,5 +1,11 @@
 #  Ruby技術者試験 Silver
 
+## require v.s. load
+- スクリプトとは異なるファイルの実行ができる関数
+- 同じファイルの実行：requireは一度のみ。loadは実行された回数だけ実行。
+- ファイルの拡張子の省略：requireは自動的に補完。loadは補完しない。
+- 用途：requireはライブラリ。loadは設定情報の読み込み用。
+
 ## 真偽値
 - `nil`と`false`以外は真
 
@@ -9,6 +15,10 @@ true, false, class, BEGIN, END, and begin, break, case, do, end, else, elsif, de
 ## クラス
 - `@@var`: クラス変数（継承されたクラスにも変更反映される）
 - `@var`: インスタンス変数
+
+## 変数・定数のスコープ
+- 外部で定義されたローカル変数はメソッド内部から呼び出せない
+- 外部で定義された定数はメソッド内部で呼び出し可能。だがメソッド内部で定数を定義することはできない。
 
 ## 多重代入
 ```rb
@@ -79,6 +89,9 @@ p 1.equal? (0 + 1)
 - `%x`, `%D` : `%m/%d/%y`   ex)  02/13/96
 - `%F`: `%Y-%m-%d` ex) 1996-02-13
 
+## 例外処理
+- `raise`に引数として例外クラスを指定しなかった場合は、`RuntimeError`に
+
 ## String
 ### Stringクラスのメソッド
 - `%`: フォーマットされた文字列を返す
@@ -127,10 +140,47 @@ p 'abcdefg'.gsub(/def/, '!!')          # => "abc!!g"
 ### Hashクラスのメソッド
 - `member?`: ハッシュがキーを持つか。エイリアス：`has_key?`, `include?`, `key?`
 - `to_a`：配列に変換
-- `update`: 破壊的に更新
+- `update`: 破壊的に更新。`merge!`のエイリアス。
 - `clear`： 空にしてselfを返す
 - `merge`: selfと引数のハッシュをマージし、新しいHashを返す。非破壊的。
+- `values`: 値の配列を返す
+- `values_at(:key_1, :key_2)`: 引数のキーたちに対応する値の配列を返す
+- `key(value)`：引数の値に対応するキーを返す
+- `[](:key)`: 引数のキーに対応する値を返す
 
 ## Numeric
 ## Numericクラスのメソッド
 - `Numeric#step(limit, step)`: `Numeric`オブジェクトを始点に、`step`ずつ`limit`まで繰り返し
+
+## Dir
+### Dirクラスのメソッド
+- home, open, delete, pwd, close
+
+
+- クラスメソッド： [], chdir, children, chroot, delete, each_child, empty?, entries,
+  exist?, foreach, getwd, glob, home, mkdir, mktmpdir, new, open, pwd,
+  rmdir, tmpdir, unlink
+- インスタンスメソッド：children, close, each, each_child, fileno, inspect, path, pos, pos=,
+  read, rewind, seek, tell, to_path
+
+## File
+### Fileクラスのメソッド
+- open
+  - `r+`: 読み書き共に先頭から
+  - `w+`: 元のファイルを空にして先頭から書き込む
+  - `a+`: 読み込みは先頭、書き込みは末尾
+- dirname, directory?, chmod, chown, open, delete
+
+
+- クラスメソッド：absolute_path, absolute_path?, atime, basename, birthtime, blockdev?,
+  chardev?, chmod, chown, ctime, delete, directory?, dirname, empty?,
+  executable?, executable_real?, exist?, expand_path, extname, file?,
+  fnmatch, fnmatch?, ftype, grpowned?, identical?, join, lchmod, lchown,
+  link, lstat, lutime, mkfifo, mtime, new, open, owned?, path, pipe?,
+  readable?, readable_real?, readlink, realdirpath, realpath, rename,
+  setgid?, setuid?, size, size?, socket?, split, stat, sticky?, symlink,
+  symlink?, truncate, umask, unlink, utime, world_readable?,
+  world_writable?, writable?, writable_real?, zero?
+
+- インスタンスメソッド： atime, birthtime, chmod, chown, ctime, flock, lstat, mtime, path,
+  size, to_path, truncate
