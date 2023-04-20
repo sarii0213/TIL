@@ -130,11 +130,12 @@ p 'abcdefg'.gsub(/def/, '!!')          # => "abc!!g"
 - `select`, `filter`: 与えられたブロックが真の値を返す要素の配列を返す
 
 ## Hash
-`**hash`でキーワード変数に変換
+- `**hash`でキーワード変数に変換
+- `Hash#each`のブロックパラメータは`Array`で渡される
 
 ### Hashオブジェクトの生成方法
 - `Hash({})`, `{}`
-- `Hash[]`
+- `Hash[key, value]`
 - `Hash.new()`
   - `Hash.new(default)`で`default`に引数が指定された場合はvalueに`default`が入る。ただ、`p`メソッドなどでHashの内容を参照する際は対象外に！
 
