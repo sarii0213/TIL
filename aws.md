@@ -116,6 +116,7 @@
 - Amazon Machine Image: EC2上で仮想サーバとして動かすゲストOS。Amazon Linuxなど。
 
 
+
 ## 参考
 - [AWS：ゼロから実践するAmazon Web Services。手を動かしながらインフラの基礎を習得](https://www.udemy.com/course/aws-and-infra/learn/lecture/14781780)
 
