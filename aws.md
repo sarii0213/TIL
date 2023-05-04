@@ -104,6 +104,18 @@
 - Application Load Balancer, Classic Load Balancer, Network Load Balancerの３サービスの総称
 - ロードバランシング：あるWebサービスが複数のWebサーバやアプリケーションサーバで構成されている場合に、リクエスト要求の負荷を分散させること
 
+- ALB
+  - L7(アプリケーション層)でのルーティングが可能　＝機能的な負荷分散
+  - リバースプロキシ型：応答通信もロードバランサーを経由してクライアントへ届くタイプ
+  - リスナーと呼ばれるコンポーネントを作成し、使用するプロトコルとポートを設定して、ルーティングルールを設定
+
+## 第4章　コンピューティング関連のサービス
+### EC2
+- Elastic Computed Cloud
+- Webサービスやバッチ処理といったアプリケーションの中核的な処理を実行する他、コンテナの実行、OSSの実行、開発時のテスト実行など幅広い用途で使用
+- Amazon Machine Image: EC2上で仮想サーバとして動かすゲストOS。Amazon Linuxなど。
+
+
 ## 参考
 - [AWS：ゼロから実践するAmazon Web Services。手を動かしながらインフラの基礎を習得](https://www.udemy.com/course/aws-and-infra/learn/lecture/14781780)
 
