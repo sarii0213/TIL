@@ -47,3 +47,5 @@
 - 集合を表すので、重複した値はない、indexもない
 - AND = `&`, OR  = `|`, X0R = `^`
 - listからsetへの変換（uniqueなもの抽出）：`set(<list_object>)`
+
+### if
