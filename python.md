@@ -49,3 +49,50 @@
 - listからsetへの変換（uniqueなもの抽出）：`set(<list_object>)`
 
 ### if
+- `if x in y:`, `if x not in y:`
+- `not`はboolean型の判定に使う
+- `0`, `0.0`, `''`, `[]`, `{}`, `()` = False
+- `is`: object同士が同じものかどうかを判定
+  - `if is_empty is None:`
+  - `None`: 変数は宣言するけど何も入れたくない（null object）
+
+### while
+- `break`: ループから出る
+- `continue`: それ以下の処理をスキップして次のループへ
+- `else`: breakされずにループが終わったら実行される
+
+### input
+```python
+# input関数で入力結果を変数に代入
+while True:
+    word = input('Enter:')
+    num = int(word)
+    if num == 100:
+        break
+    print('next')
+```
+
+### for
+- `range(<num>)`関数: num分forループ回せる
+  - `range(<first_num>, <last_num>, <interval>)`
+- `enumerate`関数: 要素のindexを使える
+  ```python
+  for i, fruit in enumerate(['apple', 'banana', 'orange']):
+    print(i, fruit)
+  ```
+- `zip`関数: index指定不要で複数リストから同index同士の要素を取り出せる
+  ```python
+  days = ['Mon', 'Tue', 'Wed']
+  fruits = ['apple', 'banana', 'orange']
+  drinks = ['coffee', 'tea', 'beer']
+
+  for day, fruit, drink in zip(days, fruits, drinks):
+    print(day, fruit, drink)
+  ```
+- dictionaryをforループで回す
+  ```python
+  d = {'x': 100, 'y': 200}
+  # items関数でtupleのリストが出力され、それがk, vに展開される
+  for k, v in d.items():
+    print(k, ':', v)
+  ```
