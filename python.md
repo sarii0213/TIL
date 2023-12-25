@@ -405,3 +405,6 @@ class ToyotaCar(Car):
   ```
 - subprocess: terminalでやるcommandを実行できる
   - `os.system`でも`subprocess.run`と同様にコマンド実行できるが、subprocessの方が推奨されてる
+
+- datetimeライブラリで日付時刻操作、timeライブラリではtime.sleepやtime.time（1970/01/01から何秒経ってるか）
+  - バックアップファイルの生成に使えたり（ファイルがあれば、copyして日時情報をファイル名につけて保存）
