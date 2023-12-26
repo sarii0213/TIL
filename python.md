@@ -208,6 +208,7 @@ print(sys.argv)
 - package, moduleのファイル構造を変えている場合は、`try: <import_sentence> except ImportError: <other_import_sentence>`でエラーハンドリングできる
 - setup.pyを書いてpackage内のファイル群をひとつまとめてpackage化できる
   - `python setup.py sdist`-> tarファイル作られる
+  - setupのためのライブラリは、`distutils.core`よりも`setuptools`がよく使われている（package化するディレクトリを自動でリスト化してくれたり、インストールすべきライブラリを指定できたり）
 - 組み込み関数：pythonにあらかじめて読み込まれている(=builtin)moduleの関数（print, range, zip, sorted,,）
 - 標準ライブラリ：importして使えるmodule(https://docs.python.jp/3/library/index.html)
   - 例：`collections.defautldict`: dictionaryの値の初期値を設定してdictを宣言できる
