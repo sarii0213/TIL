@@ -41,6 +41,7 @@
 - updateメソッド：重なるkeyを上書き、ないkeyの値とのペアを追加
 - getメソッド：引数で指定したkeyのvalueを返す。引数で指定したkeyがない場合、classは`NoneType`に
 - delメソッドだとdictionary丸ごと消えて、clearメソッドなら中身だけ空に
+- `if k in dictionary`では、dictionaryのキー群が参照されるので、`dictionary.keys()`と書かなくていい
 
 ### set
 - `set = {1,2,3,4}`
@@ -124,6 +125,7 @@ while True:
 - クロージャ
   - 関数内関数objectをreturn
   - 引数だけ入れて関数を実行する準備をしてから、他のことをしてor用途を分けて、その関数の実行をしたいタイミングで実行させる
+  - グローバル変数を使わずに変数を保持できて汚染が防げる
 
 - デコレータ
   - 関数をラップしてなにか装飾をつけたい時に使う
@@ -140,6 +142,7 @@ while True:
   - `yield`を使うと状態を保持しつつ、一旦ループから抜けて次へ
   - `next(<generator>)`で次の処理へ
   - 重たい処理を一気に行うより、呼ばれるたびに小分けにして実行させられる
+  - 単なるfor文より高速
 
 ### リスト内包表記
 ```python
@@ -409,3 +412,72 @@ class ToyotaCar(Car):
 
 - datetimeライブラリで日付時刻操作、timeライブラリではtime.sleepやtime.time（1970/01/01から何秒経ってるか）
   - バックアップファイルの生成に使えたり（ファイルがあれば、copyして日時情報をファイル名につけて保存）
+
+
+### コードスタイル
+- `pep8`, `flake8`, `pylint`をimport&有効化してコードをきれいに（`pylint` > `flake8`の方が厳しめ）
+- メモリの都合上、for文で変数に文字列を足すことを繰り返すより、listにappendを繰り返し、最後にjoinする方が良い◎
+- import文はカンマで繋げない
+- グローバル変数は大文字で書く
+
+### config
+- `configparser`: ライブラリimportでアプリの設計ファイルの読み書き
+- `yaml`: ライブラリimportで設定に使われることが多いyamlファイルの読み書きできる
+- `logging`ライブラリimport -> `logging.basicConfig(filename='test.log', level=logging.INFO)`にしてアプリ開発を進めることが多い(handlerでfile出力やコンソール出力を選択)
+- `virtualenv`: pythonのversionやインストールするライブラリを変えた環境を作れる
+- `optparse`: pythonでscriptを作る時にoptionの挙動を決められる
+
+### db
+- SQL Alchemy: pythonでsql操作ができるORM wrapper。sqlite3やmysqlと接続。
+- sqlite3(`brew install sqlite3`後)
+  ```python
+  import sqlite3
+
+  conn = sqlite3.connect('test_sqlite.db') # ':memory:'にするとメモリ上にDBを作ってくれる->実行のたびにデータ消える
+
+  curs = conn.cursor()
+
+  curs.execute(
+       'CREATE TABLE persons(id INTEGER PRIMARY KEY AUTOINCREMENT, name STRING)')
+  conn.commit()
+
+  curs.execute(
+      'INSERT INTO persons(name) values("Mike")'
+  )
+  conn.commit()
+
+  curs.execute('SELECT * FROM persons')
+  print(curs.fetchall())
+
+  curs.close()
+  conn.close()
+  ```
+- mysql(`pip install mysql-connector-python`後)
+  ```python
+  import mysql.connector
+
+  conn = mysql.connector.connect(host='127.0.0.1', user='root', password='')
+  cursor = conn.cursor()
+  cursor.execute(
+     'CREATE DATABASE test_mysql_database'
+  )
+  cursor.close()
+  conn.close()
+
+  conn = mysql.connector.connect(host='127.0.0.1', user='root', password='', database='test_mysql_database')
+  cursor = conn.cursor()
+  cursor.execute('CREATE TABLE persons('
+                'id int NOT NULL AUTO_INCREMENT, '
+                'name varchar(14) NOT NULL,'
+                'PRIMARY KEY(id))')
+  cursor.execute('INSERT INTO persons(name) values("Mike")')
+  conn.commit()
+
+  cursor.execute('SELECT * FROM persons')
+  for row in cursor:
+    print(row)
+
+  cursor.close()
+  conn.close()
+  ```
+- SQLAlchemy(sqlalchemy, pymysqlインストール後)
