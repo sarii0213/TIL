@@ -1,4 +1,6 @@
 ## python 基礎
+- [現役シリコンバレーエンジニアが教えるPython 3 入門 + 応用 +アメリカのシリコンバレー流コードスタイル](https://www.udemy.com/share/1013hk3@9HhN9tz5uuXRCkfJP38akfLaXFkjDVq2kin2BdrBV1mQWo_yKL__G1uxhqrwJmOdKg==/)
+
 
 ### help
 `help(<class_name>)`でメソッド一覧確認できる
@@ -428,7 +430,11 @@ class ToyotaCar(Car):
 - `optparse`: pythonでscriptを作る時にoptionの挙動を決められる
 
 ### db
-- SQL Alchemy: pythonでsql操作ができるORM wrapper。sqlite3やmysqlと接続。
+- RDBとNoSQL
+  - 違い：RDBは整合性重視、NoSQLは高速・柔軟・データ容量重視
+  - RDBの例：sqlite, mysql
+  - NoSQLの例：redis, dbm, memcache（キーバリュー型）、mongodb（ドキュメント型）、hbase（ワイドカラム型）、neo4j（グラフ型）
+- SQL Alchemy: pythonでsql操作ができるORM wrapper。sqlite3やmysqlと接続。(sqlalchemy, pymysqlインストール後)
 - sqlite3(`brew install sqlite3`後)
   ```python
   import sqlite3
@@ -480,4 +486,13 @@ class ToyotaCar(Car):
   cursor.close()
   conn.close()
   ```
-- SQLAlchemy(sqlalchemy, pymysqlインストール後)
+- dbm: mysqlなどより簡易的に使える。valueはbyte or stringのみ許容されているのでcacheとして使うのが◎
+- memcached: cacheする時間を指定してstoreしていける。高速にデータを扱えるので、高アクセスのページのデータを入れておく◎
+  (`brew install memcached & pip install python-memcached`後)
+- pickle: pythonのデータをそのままの形で保存
+- mongodb: sql文を書かない。json形式の大量のログを入れて後で読んだりするのに有効。高速。検索など複雑な操作はNG。
+- hbase: Hadoopのdb.SNSのデータやビッグデータの扱いに◎。
+- neo4j: 人間関係の関係性を導き出すのに有効。
+
+## Django
+- [現役シリコンバレーエンジニアが教えるPython 3 入門 + 応用 +アメリカのシリコンバレー流コードスタイル](https://www.udemy.com/share/101YR63@lr3xw9m1qCd9569NRyZZr-Ihuw03k1UCilIT1Unil0DgukjhVrFIkznQEjdUMde1cw==/)
