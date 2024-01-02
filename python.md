@@ -494,5 +494,79 @@ class ToyotaCar(Car):
 - hbase: Hadoopのdb.SNSのデータやビッグデータの扱いに◎。
 - neo4j: 人間関係の関係性を導き出すのに有効。
 
-## Django
-- [現役シリコンバレーエンジニアが教えるPython 3 入門 + 応用 +アメリカのシリコンバレー流コードスタイル](https://www.udemy.com/share/101YR63@lr3xw9m1qCd9569NRyZZr-Ihuw03k1UCilIT1Unil0DgukjhVrFIkznQEjdUMde1cw==/)
+## Django 基礎
+- [【徹底的に解説！】Djangoの基礎をマスターして、3つのアプリを作ろう！（Django2版 / 3版を同時公開中です）](https://www.udemy.com/share/101YR63@lr3xw9m1qCd9569NRyZZr-Ihuw03k1UCilIT1Unil0DgukjhVrFIkznQEjdUMde1cw==/)
+- Justin MitchelのDjango Coreがおすすめ（いっぱい手を動かす。辞書的な使い方。バージョンは古い。）
+
+### コマンド
+- `django-admin startproject <project_name>`：djangoのプロジェクトを新規作成
+  - <b>プロジェクト</b>が全体を統括し、<b>アプリ</b>が各機能の処理を担う
+- `python manage.py runserver`：サーバ立ち上げ
+  
+### ファイル構成
+- プロジェクト新規作成時に作られるファイル 
+  - `__init__.py`: このファイルがあるディレクトリをパッケージだと認識させられる＝importできる
+  - `asgi.py`: 今後使われるwsgi.pyの進化系
+  - `wsgi.py`: うぃずぎ。web server gateway interface. web serverとdjangoのコードの間のやりとりを取り持つ
+  - `urls.py`: web serverからのrequestを受ける総合窓口。django内の各アプリ（＝機能）のurls.pyに割り振っていく。
+    - `urlpatterns`: 
+      - `path(<URLのパターン>, <実行する処理>)`
+      - `<実行する処理>`でhtmlファイルを返す場合、`<ViewClass>.as_view()`と書く
+  - `settings.py`: アプリケーション全体の各種設定
+    - `BASE_DIR`: 処理が実行されているファイル(`Path(__file__)`)の絶対パス（=`resolve()`）の親の親ディレクトリ
+    - `SECRET_KEY`: アプリユーザーのパスワードを生成する時に使用するもの（注意deploy時は隠蔽する）
+    - `ALLOWED_HOSTS`: アクセスを許可するサーバを設定
+    - `INSTALLED_APPS`: django内のアプリケーション（admin=管理画面の表示, etc）
+    - `MIDDLEWARE`: djangoがデータを受け取って返す間に動くもの（securityMiddleware=pwが合ってるかチェック, etc）
+    - `ROOT_URLCONF`: ルーティングを設定するファイルを指定
+    - `TEMPLATES`: htmlなどを扱う時に使うもの（`DIRS`: テンプレートが入っているディレクトリを指定）
+    - `WSGI_APPLICATION`: application serverが実行される場所
+    - `AUTH_PASSWORD_VALIDATORS`: pwのバリデーションの種類の設定（文字数など）
+    - `USE_TZ`: 言語翻訳する際に使う設定
+    - `STATIC_URL`: 画像ファイルなどの呼び出しの仕組みに関する設定
+
+- 自分で作るファイル
+  - `views.py`
+    - ブラウザ~views.pyの流れ
+      - `web server`から`urls.py`へ`http request object`が送られる 
+      - -> `urls.py`から`views.py`へ`http request object`が送られる
+      - -> `views.py`は`models.py`とやりとりして`http response object`を作り`web server`に返す
+    - `HttpResponse`オブジェクトを使ってresponse生成
+    - viewの２つの種類
+      - **function based view**: 古め。手間かかる。カスタム性高い。（一からコード書く）
+      - **class based view**: 新しめ。自動で作られる。（djangoが用意してくれてるのを利用）
+        - TemplateViewの継承したクラスを使う
+          - `template_name`: htmlファイル名。`settings.py`の TEMPLATES > DIRS で指定したviewファイル(html)の置き場所内を探される。
+          - `model`: viewと紐づけるmodelを指定
+  - `python manage.py startapp <app_name>`: アプリの新規作成
+  - `settings.py`のINSTALLED_APPに追加 `'<app_name>.apps.<AppName>Config',`
+  - `admin.py`: 管理画面での処理を指示
+    - `python manage.py createsuperuser`: adminユーザー作成
+    - admin.pyで、管理対象のデータのモデルを指定(`admin.site.register(<ModelName>)`)
+  - `urls.py`がデフォルトではアプリのディレクトリにない理由：プロジェクトからアプリケーションに指示が出される。アプリケーション内にもそのアプリに関するルーティングが書かれた`urls.py`が設置されるのが一般的だが、プロジェクトの中だけで各アプリケーションへのルーティングをうまく整理することも可能なため、デフォルトではアプリのディレクトリには`urls.py`がないのでは。
+    - 注意！プロジェクトの`urls.py`で受け取ったurlは消されてアプリケーションの`urls.py`に渡される
+  - `models.py`: DB（＝データを整理したもの）とviewの橋渡し
+    - models.pyファイル内
+      - model fields: データ型
+      - `def __str__(self):`内に戻り値を指定することで、オブジェクト新規作成時に文字列情報を返すようにできる（デフォルトではオブジェクトそのものが返される）
+    - models.py書いたら、`makemigrations` -> `migrate` コマンド実行 (`python manage.py`に続けて書く)
+      - `makemigrations`: models.pyから設計図(=migration file)を作成（履歴を管理できるように）
+        - アプリケーションの名前を指定して実行することもできる。チーム開発では指定するのがベスト。
+      - `migrate`: models.pyの変更をDBに反映
+  - template
+    - `{% %}`: 複雑な処理
+    - `{{}}`: データ
+    - `object_list`: views.pyで指定したmodelの全オブジェクト
+
+### 仮想環境上にdjangoプロジェクトを作る
+- ① projectを作るディレクトリにて`python -m venv venv`: venvという名前の仮想環境を作成
+- ②`source venv/bin/activate`: venvという仮想環境を立ち上げる
+  - `diactivate`: 仮想環境から抜ける
+- ③ `pip install django`
+- ④ `django-admin startproject todoproject .`: current directoryにdjango projectを生成
+
+### CRUD - django's template class
+- Create: CreateView
+- Read: ListView, DetailView
+- Update: UpdateView
+- Delete: DeleteView
