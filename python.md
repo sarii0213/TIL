@@ -534,6 +534,7 @@ class ToyotaCar(Car):
     - `HttpResponse`オブジェクトを使ってresponse生成
     - viewの２つの種類
       - **function based view**: 古め。手間かかる。カスタム性高い。（一からコード書く）
+        - viewにて`render(request, <template_name>, {<object_sent_to_template>})`をreturnしたり
       - **class based view**: 新しめ。自動で作られる。（djangoが用意してくれてるのを利用）
         - TemplateViewの継承したクラスを使う
           - `template_name`: htmlファイル名。`settings.py`の TEMPLATES > DIRS で指定したviewファイル(html)の置き場所内を探される。
@@ -555,11 +556,12 @@ class ToyotaCar(Car):
       - `migrate`: models.pyの変更をDBに反映
   - template
     - `{% %}`: 複雑な処理
+      - 例：`href="{% url 'update' item.pk %}"`
     - `{{}}`: データ
     - `object_list`: views.pyで指定したmodelの全オブジェクト
 
 ### 仮想環境上にdjangoプロジェクトを作る
-- ① projectを作るディレクトリにて`python -m venv venv`: venvという名前の仮想環境を作成
+- ① projectを作るディレクトリにて`python -m venv venv`: `venv` **m**oduleを使ってvenvという名前の仮想環境を作成、という意味のコマンド
 - ②`source venv/bin/activate`: venvという仮想環境を立ち上げる
   - `diactivate`: 仮想環境から抜ける
 - ③ `pip install django`
@@ -567,6 +569,18 @@ class ToyotaCar(Car):
 
 ### CRUD - django's template class
 - Create: CreateView
+  - viewにて`fields`の指定が必須（=オブジェクトの属性 / formの項目）
+  - viewにて`success_url`の指定が必要（=form submit後の遷移先）
+    - `reverse_lazy`: "urlがrequestされてviewの処理を呼び出す"の逆の流れ。viewの処理の名前に紐づくurlに遷移。lazy=データ保存後にreverse発動。
+  - CreatelViewを継承したviewからtemplateに渡される`form`: viewで指定したmodelの新規オブジェクト
+    - `form.as_p` = pタグ内にオブジェクトをrender
 - Read: ListView, DetailView
+  - ListViewを継承したviewからtemplateに渡される`object_list`: viewで指定したmodelの全オブジェクト
+  - DetailViewを継承したviewからtemplateに渡される`object`: viewで指定したmodelのある1つのオブジェクト
 - Update: UpdateView
+  - viewにて`fields`の指定が必須（=オブジェクトの属性 / formの項目）
+  - viewにて`success_url`の指定が必要（=form submit後の遷移先）
+  - viewからtemplateに渡される`form`: viewで指定したmodelのある1つのオブジェクト
 - Delete: DeleteView
+  - viewにて`success_url`の指定が必要（=form submit後の遷移先）
+  - viewからtemplateに渡される`form`: viewで指定したmodelのある1つのオブジェクト
