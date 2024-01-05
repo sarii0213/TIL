@@ -535,10 +535,15 @@ class ToyotaCar(Car):
     - viewの２つの種類
       - **function based view**: 古め。手間かかる。カスタム性高い。（一からコード書く）
         - viewにて`render(request, <template_name>, {<object_sent_to_template>})`をreturnしたり
+        - templateに渡すobjectを自前で変数代入
+        - functionの中でHTTPメソッドごとの処理分岐させる
       - **class based view**: 新しめ。自動で作られる。（djangoが用意してくれてるのを利用）
         - TemplateViewの継承したクラスを使う
           - `template_name`: htmlファイル名。`settings.py`の TEMPLATES > DIRS で指定したviewファイル(html)の置き場所内を探される。
           - `model`: viewと紐づけるmodelを指定
+        - fileのアップロード機能の実装がfunction based viewより簡単にできる◎
+          - fileアップロードする場合のformタグ：`<form action="" method="post" enctype="multipart/form-data">`
+    - `render`=template指定して表示（HttpResponseオブジェクトを返す）、`redirect`=view func呼び出し
   - `python manage.py startapp <app_name>`: アプリの新規作成
   - `settings.py`のINSTALLED_APPに追加 `'<app_name>.apps.<AppName>Config',`
   - `admin.py`: 管理画面での処理を指示
@@ -550,6 +555,7 @@ class ToyotaCar(Car):
     - models.pyファイル内
       - model fields: データ型
       - `def __str__(self):`内に戻り値を指定することで、オブジェクト新規作成時に文字列情報を返すようにできる（デフォルトではオブジェクトそのものが返される）
+      - model fieldのnull, blankの許容：`null=True, blank=True`
     - models.py書いたら、`makemigrations` -> `migrate` コマンド実行 (`python manage.py`に続けて書く)
       - `makemigrations`: models.pyから設計図(=migration file)を作成（履歴を管理できるように）
         - アプリケーションの名前を指定して実行することもできる。チーム開発では指定するのがベスト。
@@ -559,6 +565,7 @@ class ToyotaCar(Car):
       - 例：`href="{% url 'update' item.pk %}"`
     - `{{}}`: データ
     - `object_list`: views.pyで指定したmodelの全オブジェクト
+    - formには`{% csrf_token %}`をつけてCSRFを防止
 
 ### 仮想環境上にdjangoプロジェクトを作る
 - ① projectを作るディレクトリにて`python -m venv venv`: `venv` **m**oduleを使ってvenvという名前の仮想環境を作成、という意味のコマンド
@@ -584,3 +591,29 @@ class ToyotaCar(Car):
 - Delete: DeleteView
   - viewにて`success_url`の指定が必要（=form submit後の遷移先）
   - viewからtemplateに渡される`form`: viewで指定したmodelのある1つのオブジェクト
+
+### Imageファイルの扱い方 (media)
+- 開発環境
+  - settings.py
+    - `MEDIA_ROOT = BASE_DIR / 'media'`
+    - `MEDIA_URL = 'medi/'`
+  - urls.py 
+    - `+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)`
+- 本番環境
+  - djangoの担当ではなく、webサーバが扱うべきもの（複雑な内部処理は不要で、ただ取得するだけのファイルだから）
+
+### cssファイルの扱い方 (static)
+- settings.py
+  - `STATIC_URL = "sta/"`
+  - `STATIC_ROOT = BASE_DIR / 'staticfiles'`: deploy時に`STATICFILES_DIRS`内のファイルをコピーされる場所
+  - `STATICFILES_DIRS = [str(BASE_DIR / 'static'), str(BASE_DIR / 'boardapp/static')]`: django内アプリごとに静的ファイルディレクトリを作って、整理しやすくできる
+- template
+  - `{% load static %}`: STATICFILES_DIRSに入っているディレクトリをdjangoに教えるためのタグ？
+  - `<link href="{% static 'style.css' %}" rel="stylesheet">`: cssファイルの場所を指定し読み込む
+  
+### user object
+  - login required
+    - 方法１：views.pyにて、`@login_required`でログイン状態でしか表示されないviewをwrap
+    - 方法２：templateにて、`if user.is_authenticated`で表示内容を条件分岐
+  - get username
+    - `username = request.user.get_username()`
