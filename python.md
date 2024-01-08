@@ -617,3 +617,174 @@ class ToyotaCar(Car):
     - 方法２：templateにて、`if user.is_authenticated`で表示内容を条件分岐
   - get username
     - `username = request.user.get_username()`
+
+### deploy to prod env
+#### what ???
+- Gunicornとは
+  - Pythonプログラムを実行するためのWSGI(Web Server Gateway Interface)HTTPサーバー = **アプリケーションサーバー**
+  - PythonのWebアプリケーションとWebサーバーの間のインターフェースを定義し、PythonアプリケーションをWebサーバーと連携させるための標準化された方法
+  - HTTPリクエストを受けてアプリケーションに渡し、その結果をHTTPレスポンスとしてクライアントに返す
+  - Webアプリケーションを本番環境でデプロイする際に、Gunicornは一般的な選択肢のひとつ
+  - 開発用サーバー（`manage.py runserver`で起動するWebサーバー+Appサーバー）と本番用（Gunicornなど）の違い
+    - 用途と設計
+      - 開発用：ローカル開発およびデバッグのために使用され、ホットリロードなどの機能を提供。
+      - 本番用：高負荷環境でのパフォーマンス、セキュリティ、スケーラビリティ特化。静的ファイルの提供や負荷分散などの機能を提供
+    - パフォーマンスとスケーラビリティ
+      - 開発用：シングルスレッドで動作し、低負荷での使用を想定
+      - 本番用：マルチスレッドorマルチプロセスで動作し、高負荷のトラフィックに対応。負荷分散やリバースプロキシなどの機能を提供し、スケーラビリティとパフォーマンスを向上。
+    - セキュリティ
+      - 開発用：外部からのアクセスを制限しないことが多い
+      - 本番用：ファイアウォールやリバースプロキシを使用してセキュリティ強化
+- Nginxとは
+  - 高性能で軽量なリバースプロキシサーバーおよび**Webサーバー**
+  - クライアントからのリクエストを受け取り、それを適切なバックエンドサーバーに転送
+  - 主な役割はリバースプロキシとしての役割で、複数のバックエンドアプリケーションサーバーにトラフィックを分散し、負荷分散を実現
+  - 静的ファイルの配信、SSL/TLSの設定、セキュリティ、キャッシュなどの追加の機能を提供
+  - 高速で安定しており、多くの同時接続を処理できるため、高いパフォーマンスとセキュリティを提供
+
+- Nginx + Gunicorn
+  - Webアプリケーションのデプロイメントにおいて協力して動作
+  - 一般的なアーキテクチャでは、Nginxが最前線でリクエストを受け取り、静的コンテンツの提供やリバースプロキシとして機能し、GunicornなどのWSGIアプリケーションサーバーにリクエストを転送。このような設定により、高いパフォーマンス、セキュリティ、可用性を実現。
+
+- systemd
+  - Linuxシステムでプロセスを管理し、サービスを制御するためのソフトウェア
+  - これを使用することで、アプリケーションサーバーを効果的に制御できる
+
+- /etc/systemd/system/gunicorn.socket
+  - サーバーが起動される条件を制御するファイル
+  - ソケットは、ウェブサイトへのアクセスを待ち受ける役割を果たす
+  - = ウェブサイトにアクセスがあった場合、ソケットがそれを検知してGunicornプロセスを起動
+  - 今回使われているUnixソケット
+    - ローカルマシン内での通信に特化
+    - 具体的には、/run/gunicorn.sock というファイルが、GunicornとNginxの間でデータのやり取りをするための通信チャンネルになる
+    - ↑この設定により、nginxがクライアントからのリクエストを受け取ると、それをUnixソケット経由でGunicornに転送できる
+
+- /etc/systemd/system/gunicorn.service
+  - 実際にアプリケーションサーバー（Gunicorn）を起動し、ウェブサイトのリクエストを処理するファイル
+  - ソケットからの指示を受けて、Gunicornプロセスを立ち上げてウェブサイトの要求に応じる
+
+- etc/nginx/sites-available/*
+  - nginxがリクエストを受けてどのように処理するかを制御
+  - どのポートでリクエストを待ち受けるか
+  - どのドメイン名・IPアドレスがこのnginxサーバーブロックを使用できるか
+    - サーバーブロック：web server softwareが定のドメイン名またはIPアドレスに対して設定を定義するための仕組み
+  - 特定のURLパスに対する設定
+  - `include proxy_params`: リバースプロキシの設定を読み込む。nginxがリクエストをgunicorn app serverに転送する方法の設定
+
+
+- 😈 なにをしているかのまとめ 😈
+  - nginx(webサーバ)の設定「このIPアドレスにリクエスト来たらunix socket（＝nginx <-> gunicorn間の通信チャネル）に転送」
+  - gunicorn.socketの設定「unix socketに動きがあったらgunicorn.serviceを起動」
+  - gunicorn.serviceの設定「gunicornを動かしてdjangoとのやりとりできるようにする w/ unix socketバインドして通信チャネル設定」
+
+#### how ???
+1. install libraries for prod env（ex：ubuntu）
+   1. switch user from root
+      1. `adduser user_name`
+      2. `usermod -aG sudo user_name`
+      3. `vim /etc/ssh/sshd_config` > `PermitRootLogin no` -> `systemctl reload sshd`
+   2. setup firewall (open port for ssh)
+      1. `sudo ufw allow ssh`
+      2. `sudo ufw enable`
+   3. `sudo apt update`
+   4. `sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl`
+2. setup db（ex：postgresql）
+   1. `sudo -u postgres psql`: login to postgresql
+   2. `CREATE DATABASE myproject;`
+   3. `CREATE USER myprojectuser WITH PASSWORD 'password';`
+   4. `ALTER ROLE myprojectuser SET client_encoding TO 'utf8';`
+   5. `ALTER ROLE myprojectuser SET default_transaction_isolation TO 'read committed';`
+   6. `ALTER ROLE myprojectuser SET timezone TO 'UTC';`
+   7. `GRANT ALL PRIVILEGES ON DATABASE myproject TO myprojectuser;`
+3. setup git
+   1. `sudo apt-get install git`
+   2. clone the repo (push the repo from your local beforehand)
+4. build venv & install libraries
+   1. `sudo apt install python3-virtualenv`
+   2. `cd my_project`
+   3. `virtualenv my_venv`
+   4. `source my_venv/bin/activate`: get into venv
+   5. `pip install django gunicorn psycopg2-binary`: gunicorn for web server, psycopg2 for db
+5. setup django project
+   1. setting.py
+      ```python
+      ALLOWED_HOSTS = ['prod_IP', 'localhost']
+
+      DATABASES = {
+        'default': {
+          'ENGINE': 'django.db.backends.postgresql_psycopg2',
+          'NAME': 'myproject',
+          'USER': 'myprojectuser',
+          'PASSWORD': 'password',
+          'HOST': 'localhost',
+          'PORT': '',
+        }
+      }
+      ```
+   2. run commands
+      1. `python3 manage.py makemigrations`
+      2. `python3 manage.py migrate` (had to run `ALTER DATABASE myproject OWNER TO myprojectuser` to avoid permission error)
+      3. `python3 manage.py collectstatic`
+      4. `python3 manage.py createsuperuser`
+   3. check if gunicorn is working properly as an application server
+      1. `sudo ufw allow 8000`
+      2. `gunicorn --bind 0.0.0.0:8000 my_project.wsgi`: `0.0.0.0:8000`へのアクセス（=あらゆるIPアドレス宛アクセス）に対してgunicornが`my_project.wsgi`ファイルを呼び出す
+   4. set gunicorn to be active all the time (set daemon process)
+      1. `deactivate`
+      2. gunicorn setting: nginxがgunicorn.socketを呼び出し、gunicorn.socketはアクセスを待つ。アクセスを受けると、gunicorn.serviceを呼び出す。gunicorn.serviceがwsgiファイルを呼び出す。
+         1. Nginxからアクセスを受けるsocketの作成
+            1. `sudo vim /etc/systemd/system/gunicorn.socket`
+              ```sh
+              [Unit]
+              Description=gunicorn socket
+              
+              [Socket] 
+              ListenStream=/run/gunicorn.sock # nginxから受け取る
+
+              [Install] 
+              WantedBy=sockets.target # ソケットユニット（gunicorn.socket）がアクティブ化するとサービスユニット（gunicorn.servive）をアクティブ化
+              ```
+         2. socketからアクセスを受けた時に実行するファイルの設定
+            1. `sudo vim /etc/systemd/system/gunicorn.service`
+               ```sh
+               [Unit]
+                Description=gunicorn daemon 
+                Requires=gunicorn.socket # Gunicornプロセスを開始する前に、関連するソケットサービス (gunicorn.socket) が存在している必要がある
+                After=network.target # ネットワークが完全に起動し、サービスが通信可能な状態で起動
+                
+                [Service]
+                User=​user_name
+                Group=www-data # www-dataグループは通常、Webサーバーソフトウェア（例: Nginx, Apache）と連携する際に使用される標準的なグループ
+                WorkingDirectory=/home/user_name​/my_project  
+                ExecStart=/home/user_name​/my_project​/my_env​/bin/gunicorn \
+                  --access-logfile - \  # log all data to standard output so that the journald process can collect the Gunicorn logs
+                  --workers 3 \
+                  --bind unix:/run/gunicorn.sock \  # Gunicornがリクエストを受けるためのバインド先を指定。nginxがこのsocketを介してgunicornにリクエストを転送できるように 
+                  my_project​.wsgi:application  # django appのendpoint指定。
+                 # socket経由でアクセスが来てファイルが呼び出された時に、gunicornを実行してアプリケーションサーバーを立ち上げて、djangoへの繋ぎ込みをしていく（wsgi）
+                
+                [Install] 
+                WantedBy=multi-user.target  # `systemctl enable gunicorn.service` を実行することで、Gunicornサービスがシステム起動時に自動的に起動
+               ``` 
+         3. gunicornを裏で立ち上げる `sudo systemctl start gunicorn.socket` -> `sudo systemctl enable gunicorn.socket`
+         4. nginxの設定
+            1. ブラウザから受けたリクエストをgunicornに繋げる設定
+               1. `sudo vim /etc/nginx/sites-available/my_project`
+                  ```sh
+                  server { 
+                    listen 80;
+                    server_name prod_IP​;
+                    location = /favicon.ico { access_log off; log_not_found off; } 
+                    location /static/ {
+                      root /home/user_name​/my_project​; }
+
+                    location / {
+                      include proxy_params; # リバースプロキシの設定が読み込まれ、NginxがリクエストをGunicornアプリケーションサーバーに転送する方法が設定
+                      proxy_pass http://unix:/run/gunicorn.sock; # GunicornのUnixソケット /run/gunicorn.sock に対してリクエストをプロキシするように設定。これにより、NginxはGunicornを介してDjangoにリクエストを転送
+                    }
+                  }
+                  ```
+              1. シンボリックリンクの設定をすることで、実行可能状態に `sudo ln -s /etc/nginx/sites-available/my_project /etc/nginx/sites-enabled`
+              2. nginx 再起動 `sudo systemctl restart nginx`
+              3. ブラウザからのアクセスを許可するようFirewall設定 `sudo ufw allow 'Nginx Full'`
+
