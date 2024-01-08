@@ -788,3 +788,20 @@ class ToyotaCar(Car):
               2. nginx 再起動 `sudo systemctl restart nginx`
               3. ブラウザからのアクセスを許可するようFirewall設定 `sudo ufw allow 'Nginx Full'`
 
+
+## Rails v.s. Django
+|          | Django                                       | Rails                                  |
+|----------|----------------------------------------------|----------------------------------------|
+| 設計思想 | 拡張性が高く、コード量を可能な限り少なくする | 開発スピード重視で自動生成コードが多い |
+| 汎用性   | 高い (豊富な拡張機能＆ファイル同士が独立しており開発者にimportなど委ねられてる)                                         | 低い（CoC）                                |
+| 将来性 （検索回数の推移）  | 高い                       | 低い                                   |
+| 難易度   | 難しい （全部書かないといけないのでコード量多）                                      | 易しい （短期間で簡単に開発進めやすい）                                |
+| アーキテクチャ   | Model-Template-View                                       | Model-View-Controller                                 |
+| その他   | Pythonの方が世界で人気度高い & デフォでadminページ用意されてて便利 & templateに埋め込めるコードに強い制約あり（ロジック書くな、というメッセージ）                                      | 処理速度が遅いという欠点があるため、システムの規模が大きくなるにつれて処理速度の改善のために別の言語に切り替えることも。大量のデータを扱うには不向き。                                 |
+| 個人的所見   | 全部書かないといけない＆CRUDの命名規則などルールの緩さに面食らう                                       | ruby楽しいしrailsの楽さもあるけどブラックボックス感                            |
+
+
+- 参考
+  - (DjangoとRuby on Railsはどっちがおすすめ？【将来性や難易度の違いを比較】)[https://wagtechblog.com/programing/django-rails-compare]
+  - (DjangoからRailsを使うようになって)[https://zenn.dev/lincwell_inc/articles/35421b9ef71997]
+  - (Rails以外全くわからないマンがDjangoに触れてみて驚いたRailsとの違い)[https://qiita.com/liukoki/items/7887454cd745a614b23a]
