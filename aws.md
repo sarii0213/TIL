@@ -416,3 +416,127 @@
 3. Route53のホストゾーンのNSをお名前.comのNS設定画面に反映（=購入したドメインのNSをRoute53に変更）
    ->トップレベルドメイン(.workなど)のNSが、購入したドメイン名のDNSの問い合わせに対して、Route53のNSを返すようになる
 4. 購入したドメインに紐づくIPアドレス（=ec2 public IP）を登録 by Route53でAレコード追加
+
+
+## DBサーバーを構築
+- private subnetにDBサーバを設置
+- RDSは複数のDBサーバを複数のAZに設置することを推奨されているので、たとえ設置するDBサーバがひとつでも、複数のサブネットを用意しておく
+
+### RDS
+- フルマネージドなリレーショナルデータベース
+  - フルマネージド：構築・運用の手間が軽減。AWSエンジニアによって最適な設計がなされている◎
+    - ユーザーのコントロール範囲：設定グループの変更ができる。(DB parameter groups, option groups, subnet groups)
+- 特徴
+  - 高い可用性（マルチAZを簡単に構築可能）
+    - マルチAZ：マスターとスレーブ（マスターをレプリケーションしたもの）
+  - 高パフォーマンス
+    - リードレプリカ（読み取り専用のレプリカ）を用意することで、読み書き・読み取りで別のDBを利用できる
+  - 運用負荷の軽減
+    - 自動的なバックアップ
+    - 自動的なソフトウェアメンテナンス
+    - 監視（各種メトリクスを60秒間隔で取得・確認）
+
+### 作業順序
+1. subnet用意
+2. DB用security group作成
+   1. sourceはweb server, typeはmysqlのインバウンドアクセスのみ許可
+3. RDSのsubnet group作成（VPC内のサブネットの指定）
+4. RDSのparameter group作成（DBの設定値を指定）
+5. RDSのoption group作成（プラグインの利用などDBの機能を指定）
+6. database作成
+   1. 注意１：スナップショットの取得を手動で行うと、そのスナップショットは削除されることがない（自動スナップショットは30日後orRDSの削除の際に消される）
+   2. 注意２：本番環境での停止はしないのが無難。理由は、停止に時間がかかる＆起動したい時にAWS側にRDSインスタンスのリソースが余っていないとしばらく起動できないことがあるから。 
+7. webサーバ(EC2)からRDSに接続
+   1. ec2にmysqlをインストール（https://muleif.medium.com/how-to-install-mysql-on-amazon-linux-2023-5d39afa5bf11）
+   2. ec2から作成したRDSインスタンスに接続
+      1. `mysql -h <rds_instance_endpoint> -u root -p`
+
+
+## WordPressを構築（EC2）
+- WP用のdbを作成
+- WPのインストール
+- WPの設定
+
+### WP用のdbを作成
+- db作成 
+- user作成
+  - userに全dbを操作できる権限をGRANT -> `FLUSH PRIVILEGES`
+
+### WPのインストール
+- ライブラリのインストール
+  - `sudo dnf install -y php`
+- WPのダウンロード
+  - `wget https://ja.wordpress.org/latest-ja.tar.gz`
+- WPの解凍 `tar xzvf latest-ja.tar.gz`
+- wp directoryを`/var/www/html/`にcopy(apacheがHTTPリクエストを受けた時にレスポンスを返すために参照する場所)
+- `/var/www/html/`内wp fileの所有者・グループを変更 `sudo chown apache:apache /var/www/html/ -R`
+- apache 再起動して設定反映 `sudo systemctl restart httpd.service`
+
+### WPの設定
+- `<ec2_IP_address_or_domain_name>/wordpress`にアクセスして、rdsのmysqlの設定を入力
+  - データベース名（=mysql database名）
+  - ユーザー名（=mysql user名）
+  - パスワード（=mysql password）
+  - データベースのホスト名（＝RDSエンドポイント）
+
+
+## 画像を配信 （S3 / CloudFront）
+- S3 bucketの作成
+- CloudFrontで画像キャッシュして配信高速化
+
+### インフラ設計における重要な観点
+- 可用性（サービスを継続的に利用できるか、サービスが落ちないこと）
+- 性能・拡張性
+  - 画像配信では性能にフォーカス
+- 運用・保守性
+- セキュリティ
+- 移行性
+
+### 画像の保存場所をWebサーバーでなくS3にする理由
+- Web serverのstorageが画像でいっぱいになるのを防ぐ
+- 負荷分散
+- サーバーの台数を増やしやすくする
+  - Web server上に画像が保存されると、web serverの台数を増やした時に画像ファイルを同期する必要があり、スケールアウト困難に
+- コンテンツ配信サービスから配信することで、画像配信を高速化できる
+
+### S3とは
+- 非常に安価（0.023USD/GB・月）と高い耐久性
+- 重要概念
+  - バケット
+  - オブジェクト
+  - キー（オブジェクトの格納URLパス）
+- 利用シーン
+  - 静的コンテンツの配信（img画像）
+  - バッチ連携用のファイル置き場
+  - ログなどの出力先
+  - 静的web hosting（LPなど）をS3から公開
+
+### 作業順序
+- s3 bucket作成
+- s3にアクセスできるiam user作成
+- wp用の画像をs3にアップロード
+  - wp用のプラグインのインストール（wpからs3に画像をアップロードするため）`WP Offload Media Lite`
+  - プラグインを動かすのに必要なライブラリをec2にインストール 
+    - `sudo yum install -y php-xml php-gd php-devel` -> `systemctl restart httpd.service`
+  - プラグインの設定
+
+### CloudFrontとは
+- オリジンサーバー（今回だとS3）上にあるコンテンツを、世界中100箇所以上にあるエッジロケーションにコピーし、そこから配信を行う
+- 高速＆効率的（エッジサーバーにキャッシュされるのでオリジンサーバーに負荷をかけない）
+
+### 作業順序
+- CloudFrontのdistribution（配信ルール）の作成
+- CloudFrontのドメインではなんく、独自ドメインから配信する
+  - Certificate ManagerでSSLサーバー照明書の発行
+  - CloudFrontのdistributionに独自ドメインを登録
+  - Route 53で独自ドメインとCloudFrontドメインのCNAMEレコードを作成
+  - Offload Mediaで独自ドメインを登録
+
+
+
+---
+ToDo:
+wpのパスワードを控えておくのを忘れたので、以下を再度実行
+- database delete & make it again
+- wp login 
+  
