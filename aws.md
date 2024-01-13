@@ -526,11 +526,15 @@
 
 ### 作業順序
 - CloudFrontのdistribution（配信ルール）の作成
-- CloudFrontのドメインではなんく、独自ドメインから配信する
-  - Certificate ManagerでSSLサーバー照明書の発行
+  - CNAMEに`static.<独自ドメイン>`を登録
+  - Custom SSL certificate からSSL証明書発行ページへ
+- CloudFrontのドメインではなく、独自ドメインから配信する(SEO的にbetter)
+  - Certificate ManagerでSSLサーバー証明書の発行（CloudFrontのdistributionに独自ドメインを登録するため）
+    - 発行したらCNAME recordを独自ドメインのhosted zoneに登録
   - CloudFrontのdistributionに独自ドメインを登録
-  - Route 53で独自ドメインとCloudFrontドメインのCNAMEレコードを作成
+  - Route 53で独自ドメインのCNAMEとしてCloudFrontドメインのalternate domain name, distribution domain nameを設定（独自ドメインからCloudFrontドメインに転送するため）
   - Offload Mediaで独自ドメインを登録
+    - 画像URLが独自ドメインになるように
 
 
 

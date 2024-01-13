@@ -25,3 +25,6 @@
 ## cheat sheets
 - [Ruby on Rails Cheatsheet](https://gist.github.com/mdang/95b4f54cadf12e7e0415)
 - [Ruby-Cheatsheet](https://github.com/lifeparticle/Ruby-Cheatsheet)
+
+## rails c で直前の実行結果を代入したい時
+- `<variable> = _`で直前の実行結果を変数に代入できる
