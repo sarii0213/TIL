@@ -28,3 +28,15 @@
 
 ## rails c で直前の実行結果を代入したい時
 - `<variable> = _`で直前の実行結果を変数に代入できる
+
+## flashについて
+- flashは１度redirectされても残るもの
+- redirectと一緒に使うときは`flash`のままでOK
+- renderと一緒に使うときは`flash.now`にすることで、redirectされるとflash messageは消えてくれる
+
+## turbo
+- `link_to`でdeleteメソッドにしたい場合は、`data: { "turbo-method": :delete }`をつける
+  
+
+## session
+- sessionはユーザーごとに別々に用意されたハッシュ
