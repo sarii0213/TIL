@@ -532,8 +532,8 @@
   - Certificate ManagerでSSLサーバー証明書の発行（CloudFrontのdistributionに独自ドメインを登録するため）
     - 発行したらCNAME recordを独自ドメインのhosted zoneに登録
   - CloudFrontのdistributionに独自ドメインを登録
-  - Route 53で独自ドメインのCNAMEとしてCloudFrontドメインのalternate domain name, distribution domain nameを設定（独自ドメインからCloudFrontドメインに転送するため）
-  - Offload Mediaで独自ドメインを登録
+  - Route 53で独自ドメインのCNAMEとしてCloudFrontドメインのalternate domain name(`static.<独自ドメイン>`), distribution domain nameを設定（独自ドメインからCloudFrontドメインに転送するため）
+  - Offload Mediaで独自ドメイン(`static.<独自ドメイン>`)を登録
     - 画像URLが独自ドメインになるように
 
 
@@ -576,6 +576,18 @@
   - AZをまたがる構成
   - 名前解決（DNS名が割り当てられている。ELB自体のスケールアウト・イン時もDNS名でのアクセスなので無問題に）
   - 安価な従量課金＆マネージドで運用楽
+- ロードバランサーの種類
+  - Application Load Balancer
+    - webサービスを作る時に基本的に選択
+    - 通信経路：クライアント → ALB → Web server, Web server → ALB → クライアント
+  - Network Load Balancer
+    - ALBと通信経路が異なる
+    - 通信経路：行きは一緒。帰りが、Web server → クライアント
+    - → 遅延が少ないが、パケットが相手に届くような担保などをこちらで実装しなくてはいけない
+    - TCPレイヤなどで高いパフォーマンスを求める時に選ぶ
+  - Classic Load Balancer
+    - 大別するとALBよりNLBに近い
+    - 古い世代のものなので基本的に選ばないのが◎
 
 ### 作業順序
 1. AMIからEC2を作成
@@ -584,10 +596,39 @@
       1. web serverとして起動しているEC2インスタンスからimage作成
    3. AMIからEC2を作成
 2. ELBの作成
+   1. EC2 > Load Balancers > ALB
+   2. security group & target group（=ELBの振り分け先ターゲット）の作成
+3. ELBのURLを独自ドメインに登録
+   1. Route 53でAレコード編集し、aliasとして作成したALBを登録
 
----
-ToDo:
-wpのパスワードを控えておくのを忘れたので、以下を再度実行
-- database delete & make it again
-- wp login 
-  
+### ALBのターゲットのEC2インスタンスを減らす場合
+1. target groupsから任意のinstanceを選択してderegister
+2. Health statusがDrainingから消えた状態になったら、instance削除
+
+
+### DBレイヤを冗長化（RDS）
+- DBレイヤの可用性（稼働率）に注目 
+- DBをマスタースレーブ方式に
+- by マルチAZの機能を使う
+  - 既存のRDS databaseをmodify > Multi-AZ deployment > Create a standby instance 選択するだけ
+- マスターからスレーブに宛先が変わっても、EC2から同じエンドポイントで接続できる（IP addressは変わる）
+
+
+### システムを監視（CloudWatch）
+- 運用・保守性に注目
+- 例）CPU使用率が60％を超えたらメール通知（w/ SNS）
+- 目的：
+  - すぐに障害発生を確認できるようにする
+  - 復旧にすぐに取り掛かれるようにする
+- 中身：
+  - 「正常な状態」を監視項目と正常な結果の形で定義
+  - 「正常な状態」でなくなった際の対応方法を監視項目ごとに定義
+  - 「正常な状態」であることを継続的に確認
+  - 「正常な状態」でなくなった場合には通知が来るようにして、すぐ「正常な状態」に復旧
+- 監視項目 ２種類
+  - 死活監視: 正常にシステムが動作しているか
+  - メトリクス監視: サーバーなどのリソースの状況を閾値決めて定量的に確認
+- ポイント
+  - システムも利用状況も変わるので、都度監視項目を調整すればOK
+  - 最初は基本的な要素から。CPU, Memory, Disk, Networkの使用率・枯渇を見ていく。
+    - 注意：MemoryはCloudWatchのデフォルトの設定では見れないので要カスタマイズ or その他監視ツールを使うのも◎
