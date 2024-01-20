@@ -75,6 +75,7 @@ class Todo extends React.Component {
 ```
 
 ---
+---
 
 ## official tutorial notes
 - [official tutorial](https://ja.react.dev/learn)
@@ -98,8 +99,8 @@ class Todo extends React.Component {
 - JSXの中にJavascriptのコードを入れる時は`{}`で囲む
 
 ### リストのレンダー
-- リスト内の各項目には、兄弟の中でそれを一意に識別するための文字列または数値を渡す必要がある `products.map(product => <li key={product.id}> ..)`
-  - リストのアイテムを削除、並べ替え、項目の中身の更新を行なったかをプログラムは判断できない。プログラムはliのkeyプロパティを見て、コンポーネントを新規作成・破棄・移動などを行える。
+- リスト内の各項目には、兄弟の中でそれを一意に識別するための文字列または数値を`key`に渡す必要がある `products.map(product => <li key={product.id}> ..)`
+  - 識別子がないと、リストのアイテムを削除、並べ替え、項目の中身の更新を行なったかをプログラムは判断できない。プログラムはliのkeyプロパティを見て、コンポーネントを新規作成・破棄・移動などを行える。
   - keyはコンポーネントとその兄弟間で一意であればOK
 
 ### イベントに応答
@@ -117,7 +118,7 @@ class Todo extends React.Component {
 
 ### コンポーネント間でデータを共有
 1. 子コンポーネントから親コンポーネントにstateを移動させる = "stateのリフトアップ"
-2. 親コンポーネントから子コンポーネントにstateを渡す `<MyButton count={count} onClick={handleClick} />`
+2. 親コンポーネントから子コンポーネントにstateの情報を渡す `<MyButton count={count} onClick={handleClick} />`
    1. 渡される情報 = `props`
 
 
@@ -130,7 +131,7 @@ class Todo extends React.Component {
 #### ポイント
 - コンポーネントの呼び出し部分のJSXコードにて、state更新を含んだ関数を実行することはNG
   - 理由：子コンポーネント呼び出し部分での関数呼び出し（例：`<Square onSquareClick={handleClick(0)} />`）は、親コンポーネントのレンダーの一部として発生。それによって呼び出された`handleClick(0)`は、`setSomething`を呼び出してstateを更新するため、親コンポーネント全体が再レンダーされる。 -> 無限ループへ
-- 
+
 
 #### イミュータビリティ
 - データを変更するための２つのアプローチ
@@ -141,5 +142,37 @@ class Todo extends React.Component {
   - コンポーネントがデータが変更されたかどうかを低コストで比較できる（不必要な再レンダーをスキップするために必要）
 
 
+### props vs state
+- Reactには props と state という２種類の"モデル"データがある
+- props: 関数に渡す引数のようなもの。親コンポーネントから子コンポーネントにデータを渡し、その外観をカスタマイズするために使う。例：`From`は`Button`にpropsとして`color`を渡せる。
+- state: コンポーネントのメモリのようなもの。コンポーネントが情報を追跡し、ユーザ操作に反応して変更できるようにする。例：`Button`が`isHovered`というstateを保持。
+- 親コンポーネントが`state`として情報を保持し、その情報を子コンポーネントに`props`として渡す
+
+
+
 ### Reactフレームワーク
+- 新しいアプリやサイトをフルでReactを使って構築する場合：フレームワークの使用がおすすめ
+- フレームワークを使うと不要になる作業：
+  - ルーティングやデータ取得、新しい機能の追加のたびにライブラリをバンドラに結合
+  - アプリに必要な最小限のコードを１回のクライアント・サーバ間の往復で送信しつつ、並行してページ表示に必要なデータ送信の実装
+  - ページが段階的に読み込まれ、JSコードが実行すらされないうちから操作可能になるように実装
+  - どこにでもホストできJSが無効になっていても動作する完全に静的なHTMLなファイルが入ったフォルダの生成
+- 既存のページにReactを追加する場合はフレームワークなしで使うのも○
 - Next.js
+  - フルスタックのReactフレームワーク
+  - ほぼ静的なブログサイトから複雑でダイナミックなアプリまでどんな規模のReactアプリでも作成できる
+  - `npx create-next-app@latest`でNext.jsアプリ新規作成
+
+#### Next.js
+- [(official)Learn Next.js](https://nextjs.org/learn/dashboard-app)
+
+
+
+
+
+
+### TypeScript
+
+
+#### React + Rails でアプリ
+- [Next.js(React)×Ruby on Rails チュートリアル(TypeScript対応)](https://musclecoding.com/next-js-rails-todo-tutorial/)
