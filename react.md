@@ -166,9 +166,63 @@ class Todo extends React.Component {
 #### Next.js
 - [(official)Learn Next.js](https://nextjs.org/learn/dashboard-app)
 
+- create a new project
+  - `npx create-next-app@latest nextjs-dashboard --use-npm --example "https://github.com/vercel/next-learn/tree/main/dashboard/starter-example"`
+  - ↑ starter exampleのコードでNext.jsプロジェクトを新規作成（というかclone?）
+  
+- install the project's packages
+  - `npm i`
+
+- start the development server
+  - `npm run dev`
+
+##### file structure
+- `/app`: Contains all the routes, components, and logic for your application, this is where you'll be mostly working from.
+- `/app/lib`: Contains functions used in your application, such as reusable utility functions and data fetching functions.
+  - DBもしくはAPIがまだ使えない場合、JSON or JSオブジェクトとしてモックのデータを作っておける -> DBのシードとして使う
+  - DBから返される予定のデータタイプを定義（TypeScriptによって、型違いのデータが渡されることを防げる）
+- `/app/ui`: Contains all the UI components for your application, such as cards, tables, and forms.
+- `/public`: Contains all the static assets for your application, such as images.
+- `/scripts`: Contains a seeding script that you'll use to populate your database in a later chapter.
+- Config Files: You'll also notice config files such as `next.config.js` at the root of your application. Most of these files are created and pre-configured when you start a new project using create-next-app.
 
 
+#### css styling
+- `/app/ui/global.css`を、コンポーネントにimportすればグローバルcssを適用できる。トップレベルコンポーネントのみでのimportが推奨。
+- Tailwindを使うと、TSX markupにclassとして直接css stylingができる
+- CSS Modulesを使うと、JSXとstylesを分けられる（home.module.cssに`.shape {...}`とcss書いて、`import styles from '.../home.module.css'`して、`className={styles.shape}`）
+- `clsx`ライブラリ：stateなどに応じてstyleをtoggleするのに便利
+- 他にも、sassやCSS-in-JSライブラリ（styled-jsx, styled-components, emotion）などの選択肢がある
 
+- [official: Next.js Styling](https://nextjs.org/docs/app/building-your-application/styling)
+ 
+
+#### optimizing fonts
+- `next/font`モジュールを使うと、ビルド時にフォントファイルをダウンロードし、static assetsと一緒に提供
+- -> フォントのために追加のリクエストが生じず、HTML要素がページ表示時にずれたりパフォーマンスが下がるのを防げる
+- カスタムフォント適用例
+  - `app/ui/fonts.ts`にて`import { Inter } from 'next/font/google'`して、`export const inter = Inter({ subsets: ['latin']})`
+  - `app/page.tsx`にて`import { inter } from '@/app/ui/fonts.ts'`して、`className={inter.className}`
+
+#### optimizing images
+- `<Image>`コンポーネントによって、layout shiftの防止、デバイスによってimageのresize、デフォでlazy loading、webpなどのモダンな拡張子も対応
+- `import Image from 'next/image'`して、`<Image src="/hero-desktop.png" width={1000} height={760} className="hidden md:block" alt="Screenshots of the dashboard project showing desktop version" />`のように指定
+- `width`と`height`の指定によって、layout shiftを防げる
+
+
+#### layouts & pages
+- `page.tsx`：ディレクトリを作りそこに`page.tsx`をおくと、新規でdirectoryと同じpathのrouteが作られる。Reactコンポーネントをexportするファイル。`page`ファイルのみパブリックアクセス可能。
+- `layout.tsx`: 複数ページで共有できるUIを作れる。コンポーネントをimportして、レイアウトパーツとして使ったり。`<Layout />`コンポーネントが受け取る`children`propは、layout.tsxが置かれたディレクトリ下のpagesが含まれる
+  - partial-renderingがされる◎
+  - root layout = `app/layout.tsx`。必須ファイル。
+
+
+#### navigation between pages
+- `<Link />`コンポーネント：<a>タグだとfull page refreshになってしまうのを最適化
+- ナビゲーションのviewで、`import Link from 'next/link'`して、`<Link />`コンポーネント使う
+- Next.jsはルーティングの区分によって、コードを分割してロードする -> エラー時にも影響が局所的に。
+- 本番環境では、`<Link>`コンポーネントがブラウザのviewpointに現れるとすぐにリンク先のコードを取得しておくので、ページ遷移が激速
+- `usePathname()`で、active pageがわかる
 
 
 ### TypeScript
