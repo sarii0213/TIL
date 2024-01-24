@@ -17,6 +17,7 @@
 - enum_help: enumの国際化
 - meta-tags: SEO対策
 - seed_fu: 初期データの投入
+- carrierwave: 画像アップロード（active storageの競合）
 
 ## 各gemについて詳細
 
@@ -130,3 +131,10 @@
 
 ### seed_fu
 - [seed_fuを使う](https://zenn.dev/d0ne1s/scraps/6fa88ad6c4ea85)
+
+
+### carrierwave
+- [【Rails】 CarrierWaveチュートリアル](https://pikawaka.com/rails/carrierwave)
+- [ActiveStorage vs CarrierWave](https://qiita.com/w5966qzh/items/510d4c2a3829524b2e64)
+  - erbを使わずにVue.jsとかJSフレームワークでviewを書く場合はcarrierwaveが◎
+  - erbを使う＆シンプルに画像アップロード機能を追加するならActive Storage, 細かい設定をしたい場合はcarrierwaveが最適
