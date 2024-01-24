@@ -223,7 +223,40 @@ class Todo extends React.Component {
 - Next.jsはルーティングの区分によって、コードを分割してロードする -> エラー時にも影響が局所的に。
 - 本番環境では、`<Link>`コンポーネントがブラウザのviewpointに現れるとすぐにリンク先のコードを取得しておくので、ページ遷移が激速
 - `usePathname()`で、active pageがわかる
+  - usePathnameのようなルーター関連のhookはClient Componentでなければならない
+  - ルーター関連のhook: ユーザーがブラウザ内でページ間を移動する時にURLの変更や履歴の管理を行うために使用
+  - client component: ユーザーのブラウザ内で実行されるコンポーネント
+  - ルーター関連のhookがclient componentでないといけない理由：
+    - ルーターはブラウザの履歴とURLを操作する必要があるため、ブラウザのクライアント側でのみ機能する
+    - ルーターフックは、コンポーネントのライフサイクルに依存して動作し、コンポーネントがマウントされたりアンマウントされたりしたときに発火。（？）サーバーサイドコンポーネントでは、ブラウザのコンポーネントライフサイクルが存在しないため、このようなフックの使用は制限される
+    - クライアント側でのナビゲーションとルーティングは、ユーザーインタラクションに対応し、動的なURLの変更やコンポーネントの再レンダリングを行う必要があるため、クライアントコンポーネントで管理されることが一般的
+  - `'use client'`とファイルの先頭に書くことで、ファイルがclient componentになる
+  - `clsx`を使って、current pathとlinkのhrefが等しいかどうかでcss classを分岐したり
 
+
+#### setting up database
+- github repoを作成
+- vercelのページからimport git repo -> deploy
+- githubのrepoにpushすると、Vercelがdeployしなおしてくれる
+- databaseのセットアップ
+  - Storage > Create a database > Postgres > Continue
+- databaseにconnectしたら、.env.local内をコピーして、自分のプロジェクトの.envにペースト
+- `npm i @vercel/postgres`実行して、vercel postgres sdkをインストール
+- シードの投入
+  - `placeholder-data.js`にシードデータがあり、それをもとに`seed.js`でSQL発行してDBにシード投入
+  - `package.json`の`scripts`に`"seed": "node -r dotenv/config ./scripts/seed.js"`を追加し、`npm run seed`を実行
+
+
+#### fetching data
+- APIを使うケース: APIを提供するthird partyを使う場合。clientからデータを取得＆clientにDBの秘密情報が露出するのを防ぐためにサーバー上でAPI layerを持つ
+- DBクエリを使うケース：APIエンドポイントを作成する時に、DBと連携するためにロジックを書く場合。React Server Componentsを使う場合（=サーバーでデータ取得）、API layerなしで直接DBにクエリを送れる。
+- DBクエリ：SQL文を書く or PrismaなどのORMを使う
+- Using Server Components
+  - Next.jsでデフォルトで使う
+  - promisesというシンプルな非同期処理を提供し、`async/await`を、フックやライブラリなしで使える
+  - サーバーで実行されるので、重い処理をサーバーに任せて、結果だけクライアントに送れる
+  - サーバーで実行されるので、追加のAPI layerなしでDBにクエリを送れる
+- Using SQL
 
 ### TypeScript
 
