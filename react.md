@@ -257,8 +257,39 @@ class Todo extends React.Component {
   - サーバーで実行されるので、重い処理をサーバーに任せて、結果だけクライアントに送れる
   - サーバーで実行されるので、追加のAPI layerなしでDBにクエリを送れる
 - Using SQL
+  - request waterfall 
+    - = 一つ前のリクエストがデータを返すまで、次のリクエストを送れない (= sequential <-> parallel)  
+    - waterfallである必要があるケースもあるが、意図せずパフォーマンスに影響を与えてしまわぬよう注意
+  - parallel data fetching
+    - `Pormise.all`の中で、リクエストを列挙すると、並行処理が可能
+
+
+#### static & dynamic rendering
+- static rendering
+  - データ取得＆レンダリングのタイミング = ビルド時 or revalidation時（キャッシュが消えた時など）
+  - データ取得後、CDNによって配布＆キャッシュされる
+  - 利点：ぺージ表示が高速＆サーバー負荷軽い＆SEOに◎（ページロード時にコンテンツが既に表示されているのでクローラーがインデックスしやすい）
+  - 向いてるもの：データがない or ユーザー共通で表示するデータ
+- dynamic rendering
+  - レンダリングのタイミング = ユーザーがページ訪問時
+  - 利点：データのリアルタイム性＆ユーザー特有のコンテンツの提供に◎＆リクエスト時の情報（cookies, URL params）にアクセス可能
+  - 難点：アプリケーション全体が、データ取得が最も遅いものに合わせたページ表示速度になってしまう -> streamingで対処
+- staticからdynamicにする方法
+  - `import { unstable_noStore as noStore } from 'next/cache'`
+  - `export async function ..() {}`の中で、`noStore()`を最初に呼び、キャッシュをさせない
+
+
+#### streaming
+- routeをchunkに小分けして、サーバーからクライアントにできた順に送っていくデータ転送テクニック
+- Reactにおいては、コンポーネントがchunkとして扱える◎
+- streamingを実装する方法
+  - 
+
+#### 疑問
+- importで`{}`で囲むのは、default exportでない場合 or exportされたものが複数ある場合？
 
 ### TypeScript
+- Javascriptとの違い？
 
 
 #### React + Rails でアプリ
