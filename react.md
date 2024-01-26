@@ -283,7 +283,18 @@ class Todo extends React.Component {
 - routeをchunkに小分けして、サーバーからクライアントにできた順に送っていくデータ転送テクニック
 - Reactにおいては、コンポーネントがchunkとして扱える◎
 - streamingを実装する方法
-  - 
+  - ページレベルでは、`loading.tsx`ファイルを使用
+    - `loading.tsx`: ロード中に表示するfallback UI
+    - 静的コンテンツはそのまま表示され、動的コンテンツのみ、ロード中の表示に
+    - loading skeleton: ロード中であることをユーザーに伝えるplaceholder
+    - Loadingコンポーネント内にskeleton UIを配置すると、静的ファイルとして埋め込まれる（`Loading...`などと文字を表示するよりユーザーフレンドリーなUIに）
+  - 特定のコンポーネントにおいては、`<Suspense>`を使用
+    - `<Suspense fallback={<コンポーネントロード中に表示するskeleton />}><ロードするコンポーネント></Suspense>`のように書く
+
+
+#### route groups
+- URL path構造に影響を与えずに、ロジカルグループにファイルを整理できる
+-  `(overview)`ディレクトリなど`()`をつけるtことで、URL pathに含まれないようにできる
 
 #### 疑問
 - importで`{}`で囲むのは、default exportでない場合 or exportされたものが複数ある場合？
