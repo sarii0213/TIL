@@ -256,6 +256,7 @@ class Todo extends React.Component {
   - promisesというシンプルな非同期処理を提供し、`async/await`を、フックやライブラリなしで使える
   - サーバーで実行されるので、重い処理をサーバーに任せて、結果だけクライアントに送れる
   - サーバーで実行されるので、追加のAPI layerなしでDBにクエリを送れる
+  - client componentでデータ取得が必要な場合、server componentで取得してそれをpropとしてclient componentに渡せばOK
 - Using SQL
   - request waterfall 
     - = 一つ前のリクエストがデータを返すまで、次のリクエストを送れない (= sequential <-> parallel)  
@@ -295,6 +296,35 @@ class Todo extends React.Component {
 #### route groups
 - URL path構造に影響を与えずに、ロジカルグループにファイルを整理できる
 -  `(overview)`ディレクトリなど`()`をつけるtことで、URL pathに含まれないようにできる
+
+
+#### search feature
+- URL search paramsを使う
+- URL paramsの利点
+  - ユーザーが検索結果をブックマークしたりシェアできる
+  - URL paramsはサーバーで直接利用され、初期状態をレンダリングされるので、server-side renderingがやりやすい
+  - URLでのサーチクエリやフィルターは、ユーザーの行動をトラッキングしやすい（追加のclient-sideロジックが不要）
+- 検索機能で使われるhook
+  - `useSearchParams`: current URLのパラメータを返す
+  - `usePathname`: current URLのパス名を返す
+  - `useRouter`: client component内でルーティング間のナビゲーションが可能
+    - `replace`メソッド：URLを引数に更新
+- 実装手順
+  - ユーザーのinputをcapture
+  - search paramsでURLを更新
+  - URLとinput fieldを同期して保持
+  - サーチクエリを反映するようテーブルを更新
+- ポイント
+  - event lister, hookが使えるようにClient Component化 (`'use client`)
+  - `URLSearchParams`: URL query parametersの操作に便利なWeb API。
+  - `useSearchParams`で取得した、現在のURLのパラメータを保持しつつ、`?query=<検索文字>`をURLに追加している
+  - `defaultValue`: `value`はstate使用時に使うもの。（=Reactがinput stateを管理）search queryをURLとして保存しており、state不使用なので`defaultValue`でOK（=inputそのものが自身のstateを管理）
+  - client componentでは、clientからparamsにアクセスするために`useSearchParams()`hookを使用
+  - server componentでは、pageからコンポーネントへ`searchParams`propを渡して使える
+- Debouncing: 関数が発火する頻度を制限できる（ユーザーのタイピングが終わったタイミングのみ、など）
+  - `npm i use-debounce`
+  - `useDebouncedCallback`で発火頻度を制御したいfunctionをwrapして、指定したm秒数（=ユーザーがタイプをやめてからの時間）後に、コードを実行するようにできる
+  - -> databaseへのリクエスト送信を減らせ、リソースを節約できる
 
 #### 疑問
 - importで`{}`で囲むのは、default exportでない場合 or exportされたものが複数ある場合？
