@@ -326,8 +326,37 @@ class Todo extends React.Component {
   - `useDebouncedCallback`で発火頻度を制御したいfunctionをwrapして、指定したm秒数（=ユーザーがタイプをやめてからの時間）後に、コードを実行するようにできる
   - -> databaseへのリクエスト送信を減らせ、リソースを節約できる
 
+
+#### manipulating data
+- server actions
+  - 非同期コードをサーバーで直接実行できる（データ操作のためのAPIエンドポイント不要）
+  - セキュリティ対策も◎（POSTリクエスト、暗号化クロージャ、厳格な入力値チェック、エラーメッセージのハッシュ化、ホストの制限など）
+- `form`タグの`action`属性にて、actionsを発火させられる（actionはデータを含んだFormDataオブジェクトを受け取る）
+  - server actionsがPOST APIエンドポイントを作成してくれるので、手動でエンドポイントを書かなくてOK
+  - formDataオブジェクトの値を、FormSchemaで定義されたバリデーションルールにしたがって解析している（parseメソッドにて）
+- server component内でserver actionを発火させる利点：progressive enhancementなので、JSが無効なクライアントでも動く
+  - progressive enhancement: まず基本的な機能がすべてのユーザーに提供され、それから対応可能なブラウジング環境やデバイスを持つユーザーに対して、追加の機能や高度なエクスペリエンスを提供。つまり、低い能力を持つデバイスや古いブラウザを使用するユーザーにもウェブサイトが動作することを確保しつつ、モダンなブラウザやデバイスを利用するユーザーにはより多くの機能を提供。
+- `caching`との密接な関係：server actionを通してフォームが送信されると、APIを使って関連するキャッシュもrevalidateされる（`revalidatePath`, `revalidateTag`など）
+- `'use server'`と書いてfunctionsを列挙すると、それらがclient/server componentsにimportされた時にserver functionsとして機能する
+- バリデーション
+  - `zod`というtypescriptのvalidation libraryを使ったり
+- レコード生成
+  - `@vercel/postgres`から`sql`をインポートして、sql文を書いてINSERT
+- revalidate
+  - 自動でキャッシュされたページを表示されないよう、`revalidatePath`で再評価するパスを指定 
+  - -> サーバーから新たにデータ取得が行われる
+- redirect（パスを指定）
+- update function
+  - dynamic route segmentを作成
+    - ディレクトリ名を`[]`で囲むと、動的にルーティングが作れる
+  - page componentでは、`searchParams`に加えて`params`をpropとして受け取れる
+- 金額の扱い方
+  - ドルではなくセントで扱う。Javascript floating-point errorsを排除するため。
+
 #### 疑問
 - importで`{}`で囲むのは、default exportでない場合 or exportされたものが複数ある場合？
+- UUIDs vs. Auto-incrementing Keysはどこで設定している？ -> create table時に、idをuuidにするかauto increment keyにするか指定
+
 
 ### TypeScript
 - Javascriptとの違い？
