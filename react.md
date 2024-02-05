@@ -165,6 +165,7 @@ class Todo extends React.Component {
 
 #### Next.js
 - [(official)Learn Next.js](https://nextjs.org/learn/dashboard-app)
+- [official docs](https://nextjs.org/docs)
 
 - create a new project
   - `npx create-next-app@latest nextjs-dashboard --use-npm --example "https://github.com/vercel/next-learn/tree/main/dashboard/starter-example"`
@@ -352,14 +353,133 @@ class Todo extends React.Component {
   - page componentでは、`searchParams`に加えて`params`をpropとして受け取れる
 - 金額の扱い方
   - ドルではなくセントで扱う。Javascript floating-point errorsを排除するため。
+- JSのbind
+  - `updateInvoiceWithId = updateInvoice.bind(null, invoice.id)`
+  - = `updateInvoice`関数の"this"の参照先をwindowに変え、関数への引数として`invoice.id`を渡した新しい関数を作成している
+  - Nextjs tutorial 「JS `bind`を使って`id`をServer Actionに渡すことで、Server Actionに渡されたあらゆる値がエンコードされることを保証する」
+
+#### handling errors
+- try/catchの中にredirectは書かない
+  - 一部のWebアプリフレームワークやライブラリでは、ページのリダイレクトを行うためにエラーをスローするようなメカニズムを用いていることがある
+  - try内でエラーがスローされると、近くのcatchに移動してそのエラーを処理することになってしまう
+  - 意図しないエラー処理を防ぐために、tryの中にredirectは書かないのが◎
+  - (revalidatePathはtry/catchの中でも外でもどちらでもいいっぽい)
+- error.tsx
+  - needs to be a client component
+  - catching **ALL** errors
+  - two props; error, reset
+    - error: JS native error objectのインスタンス
+    - reset: error boundaryをリセットする関数。実行されると、route segmentをre-renderする。
+- notFound function
+  - `import { notFound } from 'next/navigation'`して、notfoundの対象がない分岐にて`notFound()`呼び出す
+  - urlに沿った箇所に`not-found.tsx`ファイルを作成し、not found時のUI作成
+
+
+#### improving accessibility
+- accessibility check plugin: `eslint-plugin-jsx-a11y`
+- form validation
+  - client-side validation
+    - input要素にrequired属性を追加（ブラウザでのバリデーション）
+  - server-side validation
+    - `useFormState`hookをimport。hookなのでclient componentに。
+      - useFormState takes two arguments: `(action, initialState)`
+        - `action`: バリデーション対象のaction
+        - `initialState`: バリデーション結果を格納するobject（=state）の初期値。`{ errors?: {...}, message?: ... }`など自由に決められる。
+      - useFormState returns two values: `[state, dispatch]` (form state, dispatch function)
+        - `state`: formの状態のobject。`state.errors..`とバリデーション結果を取得できる。
+        - `dispatch`: `action`を実行するための関数。formタグのactionに`dispatch`を指定すると、Next.jsが解析してaction属性の値を作ってくれる。
+      - useFormState hookから渡されるstateを含んだ`prevState`は、バリデーション対象のactionにて必須のprop
+      - `parse()`を`safeParse()`に変更 -> success or errorを含んだobjectを返す。try/catchが不要。
+      - 上記objectがsuccessでなかったら、早期リターンしてerrors, messageを返す
+        - `validatedFields.error`と`validatedFields.error.flatten()`で形がだいぶ変わる。flatten()はZodで用意された関数。
+    - aria labels
+      - `aria-describedby`: 入力欄（`aria-describedby`）とエラーメッセージ表示部分(`id`)のつながりを示す
+      - `aria-live="polite"`: contentに変化があり（ユーザーがエラーを直すなど）、入力が止まっている時に、エラー内容の更新を通知
+      - `aria-atomic`: assistive technologyが変化した部分の全て,もしくは変化した部分のみを通知するかの指定。true=変化した部位を含む要素全体が通知される。
+
+
+#### adding authentication 
+- authentication & authorization
+  - authentication: checks who you are
+  - authorization: determines what you can do or access in the app
+- NextAuth.jsを使う
+  - authenticationを楽に実装できる便利ライブラリ
+  - `npm install next-auth@beta`(← Next.js 14と互換性あり)
+  - `openssl rand -base64 32`: generate a secret key for the app. this key is for cookies which ensures the security of user sessions
+  - `.env`に上記コードで生成したsecret keyをコピペ `AUTH_SECRET=<generated_secret_key>`
+  - rootに`auth.config.ts`ファイルを作成
+    - NextAuth.jsの設定オプションを含む`authConfig`objectをexportするファイル
+    - protect routes with Next.js Middleware
+      - `authorized` callback: Next.js Middlewareを経由してリクエストがページアクセス権限を持つかをチェック
+      - `authorized`の引数 `auth`, `request`
+        - `auth`: user sessionを含む
+        - `request`: incoming requestを含む
+      - `providers` option: 他のログインオプションを列挙する場所
+  - import the `authConfig` object into a Middleware file `middleware.ts`
+    - NextAuth.jsとともに`authConfig` objectをinitialze -> `auth` propertyをexport
+    - Middlewareの`matcher`オプションを使って、特定のパスでのみ実行されるように指定
+  - Middlewareを使うメリット
+    - 保護されたroutesは、middlewareがauthenticationを検証するまで、レンダリングされないため、セキュリティ＆パフォーマンスに◎
+- password hashing
+  - password hashing に使うのは`bcrypt` (Node.js APIに依存)
+  - `auth.ts`ファイルを作成し、`authConfig`を展開（Next.js Middleware内でNode.js APIは使えないため、`auth.config.ts`とは別で用意する必要あり）
+    - `providers` optionにCredentials providerを追加（= username, passwordでlogin）
+      - `OAuth` or `email` providers are recommended
+    - `auth.ts`から`signIn`, `singOut`をimportすれば、ログイン・ログアウト処理が実装できる
+- zodでemail, passwordのvalidation before checking if the user exists in the db
+- getUser functionでemailが同じuserを取得
+- `bcrypt.compare`でパスワード比較
+- `login-form.tsx`コンポーネントにて、`useFormState`と`useFormStatus`（handle pending state）を使う
+
+#### adding metadata
+- metadata: SEO, SNSでの共有などで効果的
+- metadataの種類
+  - title metadata `<title>...</title>`
+  - description metadata `<meta name="description" content="..." />`
+  - keyword metadata `<meta name="keywords" content="..." />`
+  - open graph metadata
+    - ```html
+      <meta property="og:title" content="Title Here" />
+      <meta property="og:description" content="Description Here" />
+      <meta property="og:image" content="image_url_here" />
+      ```
+  - favicon metadata `<link rel="icon" href="path/to/favicon.ico" />`
+- two ways to add metadata to your app
+  - config-based: export a static metadata object or a dynamic generateMetadata function in a `layout.js` or `page.js`
+  - file-based:
+    - `favicon.ico`, `apple-icon.jpg`, `icon.jpg`: for favicons and icons
+    - `opengraph-image.jpg` and `twitter-image.jpg`: for social media images
+    - `robots.txt`, `sitemap.xml`: for search engine crawler
+- metadataの設定例
+  - ```javascript
+    import { Metadata } from 'next';
+
+    export const metadata: Metadata = {
+      title: {
+        template: '%s | Acme Dashboard',
+        default: 'Acme Dashboard',
+      },
+      description: 'The official Next.js Course Dashboard, built with App Router.',
+      metadataBase: new URL('https://next-learn-dashboard.vercel.sh'),
+    };
+    ```
+
 
 #### 疑問
 - importで`{}`で囲むのは、default exportでない場合 or exportされたものが複数ある場合？
 - UUIDs vs. Auto-incrementing Keysはどこで設定している？ -> create table時に、idをuuidにするかauto increment keyにするか指定
-
+- `<UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />` 18pxを`[]`で囲むのは何？
+  - Tailwindでは、特定の値を指定するのに`[値]`という構文が使われる
+- const user = await sql<User>`SELECT * FROM users WHERE email=${email}` `<User>`はなに？型指定？
+  - Promise型（`Promise<User | undefined>`）を用いることで、非同期処理の実行完了後の値を定義することができる
 
 ### TypeScript
-- Javascriptとの違い？
+- Javascriptを拡張して作られたもの（コンパイルするとJSに変換される）
+- 大人数のプログラマーが携わる場合でもエラーを防ぎやすいように設計されている
+- JSは動的型付け、TSは静的型付け
+  - 動的型付け：コード実行時にデータ型が自動で決まる。実行しないとエラーがわからない
+  - 静的型付け：変数のデータ型をあらかじめ決められる。コンパイル時点でエラーがわかる、コードが読みやすい
+- TODO: [TS入門 トラハック YouTube](https://www.youtube.com/watch?v=kd8VH10jXwc&list=PLX8Rsrpnn3IW0REXnTWQp79mxCvHkIrad)
 
 
 #### React + Rails でアプリ
